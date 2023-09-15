@@ -1,0 +1,34 @@
+{
+  "name": "expr-validator",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "一个通过字符串表达式进行数据验证的库",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/expr-validator.umd.cjs",
+  "module": "./dist/expr-validator.js",
+  "exports": {
+    ".": {
+      "import": "./dist/expr-validator.js",
+      "require": "./dist/expr-validator.umd.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite build -w",
+    "build": "vite build"
+  },
+  "keywords": [
+    "validator",
+    "expression",
+    "expression-validator"
+  ],
+  "author": "<openorson@hotmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.6.0",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9",
+    "vite-plugin-dts": "^3.5.3"
+  }
+}
