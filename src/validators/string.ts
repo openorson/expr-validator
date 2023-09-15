@@ -7,5 +7,3 @@ export type StringValidatorExpression = ValidatorExpression<"string", [StringVal
 export const stringValidator = createValidator<StringValidatorExpression>({
   validate(context) {},
 });
-
-stringValidator("string!", "");
