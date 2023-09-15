@@ -10,13 +10,5 @@ export default defineConfig({
       name: "exprValidator",
       fileName: "expr-validator",
     },
-    // rollupOptions: {
-    //   external: ['vue'],
-    //   output: {
-    //     globals: {
-    //       vue: 'Vue',
-    //     },
-    //   },
-    // },
   },
 });

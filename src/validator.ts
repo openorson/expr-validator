@@ -9,5 +9,7 @@ export function createValidator<Expression>(options: ValidatorOptions<Expression
     return true;
   }
 
+  validator[Symbol.toStringTag] = "ExprValidator";
+
   return validator;
 }
