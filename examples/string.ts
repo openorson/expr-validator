@@ -7,6 +7,6 @@ function isArr(val: unknown) {
   return Object.prototype.toString.call(val) === "[object Array]";
 }
 
-if (validators.stringValidator("string!{email}", email)) {
+if (validators.stringValidator("string!{url}", email)) {
   console.log(email);
 }

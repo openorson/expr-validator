@@ -8,10 +8,12 @@
   ],
   "main": "./dist/expr-validator.umd.cjs",
   "module": "./dist/expr-validator.js",
+  "types": "./dist/expr-validator.d.ts",
   "exports": {
     ".": {
       "import": "./dist/expr-validator.js",
-      "require": "./dist/expr-validator.umd.cjs"
+      "require": "./dist/expr-validator.umd.cjs",
+      "types": "./dist/expr-validator.d.ts"
     }
   },
   "scripts": {
@@ -20,10 +22,15 @@
   },
   "keywords": [
     "validator",
+    "valid",
+    "validate",
+    "validation",
+    "expr",
     "expression",
+    "expr-validator",
     "expression-validator"
   ],
-  "author": "<openorson@hotmail.com>",
+  "author": "openorson<openorson@hotmail.com>",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.6.0",
