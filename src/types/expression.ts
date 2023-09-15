@@ -16,7 +16,14 @@ export type ValidatorExpressionArgsTemplate<
     ? `${ValidatorExpressionArgTemplate<U>}${ValidatorExpressionArgsTemplate<B>}`
     : never
   : "";
+export type ValidatorExpressionTypePartTemplate<Type extends keyof ValidatorDataType = keyof ValidatorDataType> =
+  `${ValidatorExpressionTypeTemplate<Type>}${ValidatorExpressionEachTemplate}${ValidatorExpressionOptionalTemplate}`;
 export type ValidatorExpression<
   Type extends keyof ValidatorDataType = keyof ValidatorDataType,
   Args extends [string, string][] = []
-> = `${ValidatorExpressionTypeTemplate<Type>}${ValidatorExpressionEachTemplate}${ValidatorExpressionOptionalTemplate}${ValidatorExpressionArgsTemplate<Args>}`;
+> = `${ValidatorExpressionTypePartTemplate<Type>}${ValidatorExpressionArgsTemplate<Args>}`;
+
+export type ValidatorExpressionTsType<Expression> =
+  Expression extends `${infer Type}${ValidatorExpressionEachTemplate}${ValidatorExpressionOptionalTemplate}${string}`
+    ? Type
+    : never;
