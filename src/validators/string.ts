@@ -1,4 +1,3 @@
-import isUUID from "validator/es/lib/isUUID";
 import { ValidatorExpression } from "../types/expression";
 import { createValidator } from "../validator";
 
@@ -10,6 +9,6 @@ export type StringValidatorExpression = ValidatorExpression<"string", [StringVal
 
 export const stringValidator = createValidator<StringValidatorExpression>({
   validate(context) {
-    return isUUID(context.value as string);
+    return true;
   },
 });

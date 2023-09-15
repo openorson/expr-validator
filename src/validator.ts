@@ -3,8 +3,8 @@ import { ValidatorOptions } from "./types/validator";
 
 export function createValidator<Expression>(options: ValidatorOptions<Expression>) {
   function validator<const Expr extends Expression, Type = TsTypeFromValidatorExpression<Expr>>(
-    expression: Expr,
-    value: unknown
+    value: unknown,
+    expression: Expr
   ): value is Type {
     return true;
   }
