@@ -4,6 +4,7 @@ import { dateRangeValidator } from "./data-range";
 import { dateValidator } from "./date";
 import { numberValidator } from "./number";
 import { numberRangeValidator } from "./number-range";
+import { objectValidator } from "./object";
 import { stringValidator } from "./string";
 
 export const validator = {
@@ -14,4 +15,5 @@ export const validator = {
   date: dateValidator,
   dateRange: dateRangeValidator,
   any: anyValidator,
+  object: objectValidator,
 };

@@ -7,5 +7,6 @@ export { booleanValidator } from "./validators/boolean";
 export { dateValidator } from "./validators/date";
 export { dateRangeValidator } from "./validators/data-range";
 export { anyValidator } from "./validators/any";
+export { objectValidator } from "./validators/object";
 
 export { validator } from "./validators/all";
