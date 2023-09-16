@@ -1,7 +1,7 @@
 import { ValidatorExpressionAsType } from "./types/expression";
-import { ValidatorFactoryOptions, ValidatorOptions } from "./types/validator";
+import { Validator, ValidatorFactoryOptions, ValidatorOptions } from "./types/validator";
 
-export function createValidator<Expr>(options: ValidatorFactoryOptions<Expr>) {
+export function createValidator<Expr>(options: ValidatorFactoryOptions<Expr>): Validator<Expr> {
   function validator<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
     value: unknown,
     expression: Expression,
@@ -22,8 +22,8 @@ export function createValidator<Expr>(options: ValidatorFactoryOptions<Expr>) {
     value: unknown,
     expression: Expression,
     options?: ValidatorOptions
-  ): [valid: true, value: Type] | [valid: false, value: unknown] {
-    return [validator(value, expression), "" as Type];
+  ): value is Type {
+    return true;
   }
 
   validator[Symbol.toStringTag] = "ExprValidator";
