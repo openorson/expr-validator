@@ -1,4 +1,4 @@
-export interface ValidatorOptions<Expression> {
+export interface ValidatorFactoryOptions<Expression> {
   validate: (context: {
     expression: Expression;
     value: unknown;
@@ -7,4 +7,9 @@ export interface ValidatorOptions<Expression> {
     optional: boolean;
     args: Record<string, unknown>;
   }) => unknown;
+  parse?: () => unknown;
+}
+
+export interface ValidatorOptions {
+  throw?: boolean;
 }

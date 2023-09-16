@@ -57,7 +57,7 @@ export type ValidatorObjectExpressionAsType<Expression> = keyof Expression exten
         : ValidatorObjectExpressionAsType<Expression[P]>;
     };
 
-export type ValidatorExpressionAsType<Expression> = Expression extends {}
+export type ValidatorExpressionAsType<Expression> = Expression extends Record<string, unknown>
   ? ValidatorObjectExpressionAsType<Expression>
   : Expression extends string
   ? ValidatorStringExpressionAsType<Expression>

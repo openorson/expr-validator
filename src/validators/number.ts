@@ -1,7 +1,7 @@
 import { ValidatorExpression } from "../types/expression";
 import { createValidator } from "../validator";
 
-export type NumberValidatorFormatArg = ["format" | "", "currency" | "timestamp"];
+export type NumberValidatorFormatArg = ["", `/${string}/` | `${number}` | `${number}-${number}`];
 export type NumberValidatorExpression = ValidatorExpression<"number", [NumberValidatorFormatArg]>;
 
 export const numberValidator = createValidator<NumberValidatorExpression>({
