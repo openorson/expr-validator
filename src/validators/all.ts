@@ -6,6 +6,7 @@ import { numberValidator } from "./number";
 import { numberRangeValidator } from "./number-range";
 import { objectValidator } from "./object";
 import { stringValidator } from "./string";
+import { tupleValidator } from "./tuple";
 
 export const validator = {
   string: stringValidator,
@@ -15,5 +16,6 @@ export const validator = {
   date: dateValidator,
   dateRange: dateRangeValidator,
   any: anyValidator,
+  tuple: tupleValidator,
   object: objectValidator,
 };

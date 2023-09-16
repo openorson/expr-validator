@@ -1,4 +1,4 @@
-import { objectValidator } from "../src/validators/object";
+import { validator } from "../src/index";
 
 const object: unknown = {
   a: 1,
@@ -6,7 +6,7 @@ const object: unknown = {
 };
 
 if (
-  objectValidator(object, {
+  validator.object(object, {
     a: "number!",
     b: "number!",
     c: {
