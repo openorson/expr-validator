@@ -1,10 +1,10 @@
-import { TsTypeFromValidatorExpression } from "./types/expression";
+import { ValidatorExpressionAsType } from "./types/expression";
 import { ValidatorOptions } from "./types/validator";
 
-export function createValidator<Expression>(options: ValidatorOptions<Expression>) {
-  function validator<const Expr extends Expression, Type = TsTypeFromValidatorExpression<Expr>>(
+export function createValidator<Expr>(options: ValidatorOptions<Expr>) {
+  function validator<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
     value: unknown,
-    expression: Expr
+    expression: Expression
   ): value is Type {
     return true;
   }

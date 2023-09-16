@@ -27,11 +27,11 @@ export type ValidatorExpression<
   Args extends [string, string][] = []
 > = `${ValidatorExpressionTypeSectionTemplate<Type>}${ValidatorExpressionArgsTemplate<Args>}`;
 
-export type TypeSectionFromValidatorExpression<Expression> = Expression extends `${infer Type}{${string}}`
+export type TypeSectionFromValidatorStringExpression<Expression> = Expression extends `${infer Type}{${string}}`
   ? Type
   : Expression;
-export type TsTypeFromValidatorExpression<Expression> =
-  TypeSectionFromValidatorExpression<Expression> extends `${infer A}${ValidatorExpressionRequiredTemplate}`
+export type ValidatorStringExpressionAsType<Expression> =
+  TypeSectionFromValidatorStringExpression<Expression> extends `${infer A}${ValidatorExpressionRequiredTemplate}`
     ? A extends `${infer B}[]`
       ? B extends keyof ValidatorDataType
         ? ValidatorDataType[B][]
@@ -39,7 +39,7 @@ export type TsTypeFromValidatorExpression<Expression> =
       : A extends keyof ValidatorDataType
       ? ValidatorDataType[A]
       : never
-    : TypeSectionFromValidatorExpression<Expression> extends `${infer A}${ValidatorExpressionOptionalTemplate}`
+    : TypeSectionFromValidatorStringExpression<Expression> extends `${infer A}${ValidatorExpressionOptionalTemplate}`
     ? A extends `${infer B}[]`
       ? B extends keyof ValidatorDataType
         ? ValidatorDataType[B][] | null | undefined
@@ -48,3 +48,17 @@ export type TsTypeFromValidatorExpression<Expression> =
       ? ValidatorDataType[A] | null | undefined
       : never
     : never;
+
+export type ValidatorObjectExpressionAsType<Expression> = keyof Expression extends never
+  ? Expression
+  : {
+      [P in keyof Expression]: Expression[P] extends string
+        ? ValidatorStringExpressionAsType<Expression[P]>
+        : ValidatorObjectExpressionAsType<Expression[P]>;
+    };
+
+export type ValidatorExpressionAsType<Expression> = Expression extends {}
+  ? ValidatorObjectExpressionAsType<Expression>
+  : Expression extends string
+  ? ValidatorStringExpressionAsType<Expression>
+  : never;
