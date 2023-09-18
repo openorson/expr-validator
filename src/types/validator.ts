@@ -1,4 +1,7 @@
-export interface ValidatorFactoryOptions<Expression> {
+export type ArrayExpressionMode = "union" | "tuple";
+
+export interface ValidatorFactoryOptions<Expression, Mode extends ArrayExpressionMode = ArrayExpressionMode> {
+  arrayMode?: Mode;
   validate: (context: {
     expression: Expression;
     value: unknown;

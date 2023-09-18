@@ -49,6 +49,9 @@ export type ValidatorStringExpressionAsType<Expression> =
       : never
     : never;
 
+export type ValidatorArrayExpressionUnionMode = "union";
+export type ValidatorArrayExpressionTupleMode = "tuple";
+export type ValidatorArrayExpressionMode = ValidatorArrayExpressionUnionMode | ValidatorArrayExpressionTupleMode;
 export type ValidatorTupleExpressionAsType<Expression> = Expression extends readonly [infer A, ...infer B]
   ? [ValidatorStringExpressionAsType<A>, ...ValidatorTupleExpressionAsType<B>]
   : [];
@@ -66,5 +69,9 @@ export type ValidatorExpressionAsType<Expression> = Expression extends Record<st
   : Expression extends string
   ? ValidatorStringExpressionAsType<Expression>
   : Expression extends readonly unknown[]
-  ? ValidatorTupleExpressionAsType<Expression>
+  ? Expression extends readonly [ValidatorArrayExpressionUnionMode, ...infer E]
+    ? ValidatorTupleExpressionAsType<E>[number]
+    : Expression extends readonly [ValidatorArrayExpressionTupleMode, ...infer E]
+    ? ValidatorTupleExpressionAsType<E>
+    : ValidatorTupleExpressionAsType<Expression>
   : never;
