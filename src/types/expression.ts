@@ -49,6 +49,10 @@ export type ValidatorStringExpressionAsType<Expression> =
       : never
     : never;
 
+export type ValidatorTupleExpressionAsType<Expression> = Expression extends readonly [infer A, ...infer B]
+  ? [ValidatorStringExpressionAsType<A>, ...ValidatorTupleExpressionAsType<B>]
+  : [];
+
 export type ValidatorObjectExpressionAsType<Expression> = keyof Expression extends never
   ? Expression
   : {
@@ -61,4 +65,6 @@ export type ValidatorExpressionAsType<Expression> = Expression extends Record<st
   ? ValidatorObjectExpressionAsType<Expression>
   : Expression extends string
   ? ValidatorStringExpressionAsType<Expression>
+  : Expression extends readonly unknown[]
+  ? ValidatorTupleExpressionAsType<Expression>
   : never;
