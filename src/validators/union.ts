@@ -6,7 +6,7 @@ import { NumberValidatorExpression } from "./number";
 import { NumberRangeValidatorExpression } from "./number-range";
 import { StringValidatorExpression } from "./string";
 
-export type TupleValidatorExpression = readonly (
+export type UnionValidatorExpression = readonly (
   | StringValidatorExpression
   | NumberValidatorExpression
   | NumberRangeValidatorExpression
@@ -15,7 +15,7 @@ export type TupleValidatorExpression = readonly (
   | DateRangeValidatorExpression
 )[];
 
-export const tupleValidator = createValidator<TupleValidatorExpression, "tuple">({
-  arrayMode: "tuple",
+export const unionValidator = createValidator<UnionValidatorExpression, "union">({
+  arrayMode: "union",
   validate(context) {},
 });

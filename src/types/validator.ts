@@ -1,6 +1,10 @@
-import { ValidatorExpressionAsType } from "./expression";
+import { ValidatorArrayExpressionMode, ValidatorExpressionAsType } from "./expression";
 
-export interface ValidatorFactoryOptions<Expression> {
+export interface ValidatorFactoryOptions<
+  Expression,
+  Mode extends ValidatorArrayExpressionMode = ValidatorArrayExpressionMode
+> {
+  arrayMode?: Mode;
   validate: (context: {
     expression: Expression;
     value: unknown;
@@ -18,21 +22,14 @@ export interface ValidatorOptions {
   throw?: boolean;
 }
 
-export interface Validator<Expr> {
+export interface Validator<Expr, Mode extends ValidatorArrayExpressionMode = "tuple"> {
   readonly [Symbol.toStringTag]: string;
-  <const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
+  <
+    const Expression extends Expr,
+    Type = ValidatorExpressionAsType<Expression extends readonly unknown[] ? [Mode, ...Expression] : Expression>
+  >(
     value: unknown,
     expression: Expression,
     options?: ValidatorOptions
   ): value is Type;
-  parse: <const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
-    value: unknown,
-    expression: Expression,
-    options?: ValidatorOptions
-  ) => [valid: true, value: Type] | [valid: false, value: unknown];
-  prompt: <const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
-    value: unknown,
-    expression: Expression,
-    options?: ValidatorOptions
-  ) => value is Type;
 }

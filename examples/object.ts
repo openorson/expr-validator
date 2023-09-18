@@ -8,22 +8,10 @@ const object: unknown = {
 if (
   validator.object(object, {
     a: "number!",
-    b: "number!",
-    c: {
-      d: "boolean[]?",
-      e: "dateRange!",
-      f: {
-        g: "numberRange?{currency}",
-        a: {
-          b: {
-            c: {
-              d: "number!",
-            },
-          },
-        },
-      },
+    b: {
+      c: ["date!", "number!"],
     },
   })
 ) {
-  console.log(object.c.f.a.b.c.d);
+  console.log(object.b.c);
 }

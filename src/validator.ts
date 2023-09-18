@@ -1,12 +1,13 @@
-import { ValidatorExpressionAsType } from "./types/expression";
+import { ValidatorArrayExpressionMode, ValidatorExpressionAsType } from "./types/expression";
 import { Validator, ValidatorFactoryOptions, ValidatorOptions } from "./types/validator";
 
-export function createValidator<Expr>(options: ValidatorFactoryOptions<Expr>): Validator<Expr> {
-  function validator<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
-    value: unknown,
-    expression: Expression,
-    options?: ValidatorOptions
-  ): value is Type {
+export function createValidator<Expr, Mode extends ValidatorArrayExpressionMode = "tuple">(
+  options: ValidatorFactoryOptions<Expr, Mode>
+): Validator<Expr, Mode> {
+  function validator<
+    const Expression extends Expr,
+    Type = ValidatorExpressionAsType<Expression extends readonly unknown[] ? [Mode, ...Expression] : Expression>
+  >(value: unknown, expression: Expression, options?: ValidatorOptions): value is Type {
     return true;
   }
 
