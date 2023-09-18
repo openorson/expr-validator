@@ -1,5 +1,5 @@
-import { ValidatorArrayExpressionMode, ValidatorExpressionAsType } from "./types/expression";
-import { Validator, ValidatorFactoryOptions, ValidatorOptions } from "./types/validator";
+import { ValidatorArrayExpressionMode, ValidatorExpressionAsType } from "../types/expression";
+import { Validator, ValidatorFactoryOptions, ValidatorOptions } from "../types/validator";
 
 export function createValidator<Expr, Mode extends ValidatorArrayExpressionMode = "tuple">(
   options: ValidatorFactoryOptions<Expr, Mode>

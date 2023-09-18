@@ -1,5 +1,5 @@
 import { ValidatorExpression } from "../types/expression";
-import { createValidator } from "../validator";
+import { createValidator } from "../validator/validator";
 
 export type BooleanValidatorExpression = ValidatorExpression<"boolean", []>;
 

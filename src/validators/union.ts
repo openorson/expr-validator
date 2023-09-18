@@ -1,4 +1,4 @@
-import { createValidator } from "../validator";
+import { createValidator } from "../validator/validator";
 import { BooleanValidatorExpression } from "./boolean";
 import { DateRangeValidatorExpression } from "./data-range";
 import { DateValidatorExpression } from "./date";

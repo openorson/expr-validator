@@ -1,4 +1,4 @@
-export { createValidator } from "./validator";
+export { createValidator } from "./validator/validator";
 
 export { stringValidator } from "./validators/string";
 export { numberValidator } from "./validators/number";

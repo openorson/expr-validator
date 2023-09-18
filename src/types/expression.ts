@@ -4,30 +4,33 @@ export type ValidatorExpressionTypeTemplate<Type extends keyof ValidatorDataType
 export type ValidatorExpressionEachTemplate = "[]" | "";
 export type ValidatorExpressionRequiredTemplate = "!";
 export type ValidatorExpressionOptionalTemplate = "?";
-export type ValidatorExpressionRequiredAndOptionalTemplate =
-  | ValidatorExpressionRequiredTemplate
-  | ValidatorExpressionOptionalTemplate;
+export type ValidatorExpressionRequiredAndOptionalTemplate = ValidatorExpressionRequiredTemplate | ValidatorExpressionOptionalTemplate;
+export type ValidatorExpressionTypeSectionTemplate<Type extends keyof ValidatorDataType = keyof ValidatorDataType> =
+  `${ValidatorExpressionTypeTemplate<Type>}${ValidatorExpressionEachTemplate}${ValidatorExpressionRequiredAndOptionalTemplate}`;
 export type ValidatorExpressionArgTemplate<T extends readonly [string, string]> = T[0] extends infer U
   ? U extends ""
     ? `{${T[1]}}` | ""
     : `{${T[0]}:${T[1]}}` | ""
   : never;
-export type ValidatorExpressionArgsTemplate<
-  T extends readonly [string, string][],
-  U extends [string, string] = T[0]
-> = T extends [infer _, ...infer B]
+export type ValidatorExpressionArgsTemplate<T extends readonly [string, string][], U extends [string, string] = T[0]> = T extends [
+  infer _,
+  ...infer B
+]
   ? B extends [string, string][]
     ? `${ValidatorExpressionArgTemplate<U>}${ValidatorExpressionArgsTemplate<B>}`
     : never
   : "";
-export type ValidatorExpressionTypeSectionTemplate<Type extends keyof ValidatorDataType = keyof ValidatorDataType> =
-  `${ValidatorExpressionTypeTemplate<Type>}${ValidatorExpressionEachTemplate}${ValidatorExpressionRequiredAndOptionalTemplate}`;
+export type ValidatorExpressionCommentTemplate = `(${string})` | "";
 export type ValidatorExpression<
   Type extends keyof ValidatorDataType = keyof ValidatorDataType,
   Args extends [string, string][] = []
-> = `${ValidatorExpressionTypeSectionTemplate<Type>}${ValidatorExpressionArgsTemplate<Args>}`;
+> = `${ValidatorExpressionTypeSectionTemplate<Type>}${ValidatorExpressionArgsTemplate<Args>}${ValidatorExpressionCommentTemplate}`;
 
 export type TypeSectionFromValidatorStringExpression<Expression> = Expression extends `${infer Type}{${string}}`
+  ? Type
+  : Expression extends `${infer Type}{${string}}(${string})`
+  ? Type
+  : Expression extends `${infer Type}(${string})`
   ? Type
   : Expression;
 export type ValidatorStringExpressionAsType<Expression> =
