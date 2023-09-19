@@ -7,7 +7,8 @@ export interface ValidatorFactoryOptions<Expression> {
     type: string;
     each: boolean;
     optional: boolean;
-    args: Record<string, unknown>;
+    args: Record<string, string>;
+    comment: string;
   }) => unknown;
   parse?: () => unknown;
 }

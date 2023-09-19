@@ -5,8 +5,8 @@ function resolveExpression(expression: string) {
   let type: string;
   let each: boolean;
   let optional: boolean;
-  let args: any;
-  let comment: string;
+  let args: Record<string, string> = {};
+  let comment: string = "";
 
   const [eachIdx, requiredIndex, optionalIdx, argsIdx, commentIdx] = [
     expression.indexOf("["),
@@ -19,8 +19,27 @@ function resolveExpression(expression: string) {
   each = eachIdx !== -1;
   optional = optionalIdx !== -1;
   type = expression.substring(0, each ? eachIdx : optional ? optionalIdx : requiredIndex);
-  args = argsIdx === -1 ? {} : expression.substring(argsIdx, expression.lastIndexOf("}") + 1);
-  comment = commentIdx === -1 ? "" : expression.substring(commentIdx + 1, expression.indexOf(")"));
+
+  if (argsIdx !== -1) {
+    expression
+      .substring(argsIdx, expression.lastIndexOf("}") + 1)
+      .split("}{")
+      .forEach((item, idx, items) => {
+        let arg: string[];
+        if (idx === 0) {
+          arg = item.replace("{", "").split(":");
+        } else if (idx === items.length - 1) {
+          arg = item.replace("}", "").split(":");
+        } else {
+          arg = item.split(":");
+        }
+        arg[1] ? (args[arg[0]] = arg[1]) : (args["default"] = arg[0]);
+      });
+  }
+
+  if (commentIdx !== -1) {
+    comment = expression.substring(commentIdx + 1, expression.indexOf(")"));
+  }
 
   return { type, each, optional, args, comment };
 }
@@ -31,20 +50,11 @@ export function createValidator<Expr, Options extends {} = {}>(factoryOptions: V
     expression: Expression,
     options?: Options & ValidatorOptions
   ): value is Type {
-    let type: string;
     if (typeof expression === "string") {
-      console.log("********************************************");
-      console.log("type ", resolveExpression(expression));
-      console.log("********************************************");
-      // const segs = expression.split("{");
-      // type = segs[0];
-      // if (segs.length === 1) {
-
-      // }
-      // console.log(arr);
+      const valid = factoryOptions.validate({ expression, value, ...resolveExpression(expression) });
+      return !!valid;
     }
-    const valid = factoryOptions.validate({ expression, value, type: "", each: true, optional: true, args: {} });
-    return !!valid;
+    return true;
   }
 
   function parse<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
