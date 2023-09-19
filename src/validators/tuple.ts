@@ -1,3 +1,4 @@
+import { ValidatorArrayExpressionTupleMode } from "../types/expression";
 import { createValidator } from "../validator/validator";
 import { BooleanValidatorExpression } from "./boolean";
 import { DateRangeValidatorExpression } from "./data-range";
@@ -6,18 +7,21 @@ import { NumberValidatorExpression } from "./number";
 import { NumberRangeValidatorExpression } from "./number-range";
 import { StringValidatorExpression } from "./string";
 
-export type TupleValidatorExpression = readonly (
-  | StringValidatorExpression
-  | NumberValidatorExpression
-  | NumberRangeValidatorExpression
-  | BooleanValidatorExpression
-  | DateValidatorExpression
-  | DateRangeValidatorExpression
-)[];
+export type TupleValidatorExpression = readonly [
+  ValidatorArrayExpressionTupleMode,
+  ...(readonly (
+    | StringValidatorExpression
+    | NumberValidatorExpression
+    | NumberRangeValidatorExpression
+    | BooleanValidatorExpression
+    | DateValidatorExpression
+    | DateRangeValidatorExpression
+  )[])
+];
 
 export interface TupleValidatorOptions {}
 
-export const tupleValidator = createValidator<TupleValidatorExpression, TupleValidatorOptions, "tuple">({
+export const tupleValidator = createValidator<TupleValidatorExpression, TupleValidatorOptions>({
   arrayMode: "tuple",
   validate(context) {},
 });

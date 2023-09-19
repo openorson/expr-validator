@@ -1,3 +1,4 @@
+import { ValidatorArrayExpressionUnionMode } from "../types/expression";
 import { createValidator } from "../validator/validator";
 import { BooleanValidatorExpression } from "./boolean";
 import { DateRangeValidatorExpression } from "./data-range";
@@ -6,18 +7,21 @@ import { NumberValidatorExpression } from "./number";
 import { NumberRangeValidatorExpression } from "./number-range";
 import { StringValidatorExpression } from "./string";
 
-export type UnionValidatorExpression = readonly (
-  | StringValidatorExpression
-  | NumberValidatorExpression
-  | NumberRangeValidatorExpression
-  | BooleanValidatorExpression
-  | DateValidatorExpression
-  | DateRangeValidatorExpression
-)[];
+export type UnionValidatorExpression = readonly [
+  ValidatorArrayExpressionUnionMode,
+  ...(readonly (
+    | StringValidatorExpression
+    | NumberValidatorExpression
+    | NumberRangeValidatorExpression
+    | BooleanValidatorExpression
+    | DateValidatorExpression
+    | DateRangeValidatorExpression
+  )[])
+];
 
 export interface UnionValidatorOptions {}
 
-export const unionValidator = createValidator<UnionValidatorExpression, UnionValidatorOptions, "union">({
+export const unionValidator = createValidator<UnionValidatorExpression, UnionValidatorOptions>({
   arrayMode: "union",
   validate(context) {},
 });

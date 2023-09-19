@@ -24,13 +24,3 @@ export type AnyValidatorExpression =
 export const anyValidator = createValidator<AnyValidatorExpression>({
   validate(context) {},
 });
-
-const any: unknown = "";
-if (
-  anyValidator(any, {
-    a: "boolean!",
-    b: ["string!", "string!"],
-  })
-) {
-  any;
-}

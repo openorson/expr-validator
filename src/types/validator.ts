@@ -20,9 +20,9 @@ export interface ValidatorOptions {
   throw?: boolean;
 }
 
-export interface Validator<Expr, Options extends {}, Mode extends ValidatorArrayExpressionMode = "tuple"> {
+export interface Validator<Expr, Options extends {}> {
   readonly [Symbol.toStringTag]: string;
-  <const Expression extends Expr, Type = ValidatorExpressionAsType<Expression extends readonly unknown[] ? [Mode, ...Expression] : Expression>>(
+  <const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
     value: unknown,
     expression: Expression,
     options?: Options & ValidatorOptions
