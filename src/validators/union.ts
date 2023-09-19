@@ -15,7 +15,9 @@ export type UnionValidatorExpression = readonly (
   | DateRangeValidatorExpression
 )[];
 
-export const unionValidator = createValidator<UnionValidatorExpression, "union">({
+export interface UnionValidatorOptions {}
+
+export const unionValidator = createValidator<UnionValidatorExpression, UnionValidatorOptions, "union">({
   arrayMode: "union",
   validate(context) {},
 });

@@ -3,6 +3,8 @@ import { createValidator } from "../validator/validator";
 
 export type DateValidatorExpression = ValidatorExpression<"date", []>;
 
-export const dateValidator = createValidator<DateValidatorExpression>({
+export interface DateValidatorOptions {}
+
+export const dateValidator = createValidator<DateValidatorExpression, DateValidatorOptions>({
   validate(context) {},
 });

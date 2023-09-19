@@ -1,11 +1,11 @@
-import { ValidatorDataType } from "./datatype";
+import { ValidatorValueType } from "./value-type";
 
-export type ValidatorExpressionTypeTemplate<Type extends keyof ValidatorDataType = keyof ValidatorDataType> = Type;
+export type ValidatorExpressionTypeTemplate<Type extends keyof ValidatorValueType = keyof ValidatorValueType> = Type;
 export type ValidatorExpressionEachTemplate = "[]" | "";
 export type ValidatorExpressionRequiredTemplate = "!";
 export type ValidatorExpressionOptionalTemplate = "?";
 export type ValidatorExpressionRequiredAndOptionalTemplate = ValidatorExpressionRequiredTemplate | ValidatorExpressionOptionalTemplate;
-export type ValidatorExpressionTypeSectionTemplate<Type extends keyof ValidatorDataType = keyof ValidatorDataType> =
+export type ValidatorExpressionTypeSectionTemplate<Type extends keyof ValidatorValueType = keyof ValidatorValueType> =
   `${ValidatorExpressionTypeTemplate<Type>}${ValidatorExpressionEachTemplate}${ValidatorExpressionRequiredAndOptionalTemplate}`;
 export type ValidatorExpressionArgTemplate<T extends readonly [string, string]> = T[0] extends infer U
   ? U extends ""
@@ -22,7 +22,7 @@ export type ValidatorExpressionArgsTemplate<T extends readonly [string, string][
   : "";
 export type ValidatorExpressionCommentTemplate = `(${string})` | "";
 export type ValidatorExpression<
-  Type extends keyof ValidatorDataType = keyof ValidatorDataType,
+  Type extends keyof ValidatorValueType = keyof ValidatorValueType,
   Args extends [string, string][] = []
 > = `${ValidatorExpressionTypeSectionTemplate<Type>}${ValidatorExpressionArgsTemplate<Args>}${ValidatorExpressionCommentTemplate}`;
 
@@ -36,19 +36,19 @@ export type TypeSectionFromValidatorStringExpression<Expression> = Expression ex
 export type ValidatorStringExpressionAsType<Expression> =
   TypeSectionFromValidatorStringExpression<Expression> extends `${infer A}${ValidatorExpressionRequiredTemplate}`
     ? A extends `${infer B}[]`
-      ? B extends keyof ValidatorDataType
-        ? ValidatorDataType[B][]
+      ? B extends keyof ValidatorValueType
+        ? ValidatorValueType[B][]
         : never
-      : A extends keyof ValidatorDataType
-      ? ValidatorDataType[A]
+      : A extends keyof ValidatorValueType
+      ? ValidatorValueType[A]
       : never
     : TypeSectionFromValidatorStringExpression<Expression> extends `${infer A}${ValidatorExpressionOptionalTemplate}`
     ? A extends `${infer B}[]`
-      ? B extends keyof ValidatorDataType
-        ? ValidatorDataType[B][] | null | undefined
+      ? B extends keyof ValidatorValueType
+        ? ValidatorValueType[B][] | null | undefined
         : never
-      : A extends keyof ValidatorDataType
-      ? ValidatorDataType[A] | null | undefined
+      : A extends keyof ValidatorValueType
+      ? ValidatorValueType[A] | null | undefined
       : never
     : never;
 

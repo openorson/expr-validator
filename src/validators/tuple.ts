@@ -15,7 +15,9 @@ export type TupleValidatorExpression = readonly (
   | DateRangeValidatorExpression
 )[];
 
-export const tupleValidator = createValidator<TupleValidatorExpression, "tuple">({
+export interface TupleValidatorOptions {}
+
+export const tupleValidator = createValidator<TupleValidatorExpression, TupleValidatorOptions, "tuple">({
   arrayMode: "tuple",
   validate(context) {},
 });

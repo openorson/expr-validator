@@ -3,6 +3,8 @@ import { createValidator } from "../validator/validator";
 
 export type BooleanValidatorExpression = ValidatorExpression<"boolean", []>;
 
-export const booleanValidator = createValidator<BooleanValidatorExpression>({
+export interface BooleanValidatorOptions {}
+
+export const booleanValidator = createValidator<BooleanValidatorExpression, BooleanValidatorOptions>({
   validate(context) {},
 });

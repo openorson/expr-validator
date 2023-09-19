@@ -6,6 +6,7 @@ import { NumberValidatorExpression } from "./number";
 import { NumberRangeValidatorExpression } from "./number-range";
 import { StringValidatorExpression } from "./string";
 import { TupleValidatorExpression } from "./tuple";
+import { UnionValidatorExpression } from "./union";
 
 type ObjectValidatorFieldExpression =
   | StringValidatorExpression
@@ -14,14 +15,19 @@ type ObjectValidatorFieldExpression =
   | BooleanValidatorExpression
   | DateValidatorExpression
   | DateRangeValidatorExpression
-  | TupleValidatorExpression;
-type ObjectValidatorExpression<
-  Expression = Record<string, ObjectValidatorFieldExpression> | ObjectValidatorFieldExpression
-> = Record<string, Expression> | ObjectValidatorFieldExpression;
+  | TupleValidatorExpression
+  | UnionValidatorExpression;
+
+type ObjectValidatorExpression<Expression = Record<string, ObjectValidatorFieldExpression> | ObjectValidatorFieldExpression> =
+  | Record<string, Expression>
+  | ObjectValidatorFieldExpression;
+
 export type NestedObjectValidatorExpression = ObjectValidatorExpression<
   ObjectValidatorExpression<ObjectValidatorExpression<ObjectValidatorExpression<ObjectValidatorExpression>>>
 >;
 
-export const objectValidator = createValidator<NestedObjectValidatorExpression>({
+export interface ObjectValidatorOptions {}
+
+export const objectValidator = createValidator<NestedObjectValidatorExpression, ObjectValidatorOptions>({
   validate(context) {},
 });

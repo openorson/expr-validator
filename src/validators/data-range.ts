@@ -3,6 +3,8 @@ import { createValidator } from "../validator/validator";
 
 export type DateRangeValidatorExpression = ValidatorExpression<"dateRange", []>;
 
-export const dateRangeValidator = createValidator<DateRangeValidatorExpression>({
+export interface DateRangeValidatorOptions {}
+
+export const dateRangeValidator = createValidator<DateRangeValidatorExpression, DateRangeValidatorOptions>({
   validate(context) {},
 });

@@ -4,6 +4,8 @@ import { createValidator } from "../validator/validator";
 export type NumberRangeValidatorFormatArg = ["format" | "", "currency" | "timestamp"];
 export type NumberRangeValidatorExpression = ValidatorExpression<"numberRange", [NumberRangeValidatorFormatArg]>;
 
-export const numberRangeValidator = createValidator<NumberRangeValidatorExpression>({
+export interface NumberRangeValidatorOptions {}
+
+export const numberRangeValidator = createValidator<NumberRangeValidatorExpression, NumberRangeValidatorOptions>({
   validate(context) {},
 });
