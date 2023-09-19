@@ -1,4 +1,3 @@
-import { ValidatorArrayExpressionTupleMode, ValidatorArrayExpressionUnionMode } from "../types/expression";
 import { createValidator } from "../validator/validator";
 import { BooleanValidatorExpression } from "./boolean";
 import { DateRangeValidatorExpression } from "./data-range";
@@ -17,8 +16,8 @@ export type AnyValidatorExpression =
   | BooleanValidatorExpression
   | DateValidatorExpression
   | DateRangeValidatorExpression
-  | [ValidatorArrayExpressionTupleMode, ...TupleValidatorExpression]
-  | [ValidatorArrayExpressionUnionMode, ...UnionValidatorExpression]
+  | TupleValidatorExpression
+  | UnionValidatorExpression
   | NestedObjectValidatorExpression;
 
 export const anyValidator = createValidator<AnyValidatorExpression>({

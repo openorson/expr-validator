@@ -64,7 +64,15 @@ export type ValidatorObjectExpressionAsType<Expression> = keyof Expression exten
   : {
       [P in keyof Expression]: Expression[P] extends string
         ? ValidatorStringExpressionAsType<Expression[P]>
-        : ValidatorObjectExpressionAsType<Expression[P]>;
+        : Expression[P] extends readonly unknown[]
+        ? Expression[P] extends readonly [ValidatorArrayExpressionUnionMode, ...infer E]
+          ? ValidatorTupleExpressionAsType<E>[number]
+          : Expression[P] extends readonly [ValidatorArrayExpressionTupleMode, ...infer E]
+          ? ValidatorTupleExpressionAsType<E>
+          : ValidatorTupleExpressionAsType<Expression[P]>
+        : Expression[P] extends Record<string, unknown>
+        ? ValidatorObjectExpressionAsType<Expression[P]>
+        : never;
     };
 
 export type ValidatorExpressionAsType<Expression> = Expression extends Record<string, unknown>

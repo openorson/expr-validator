@@ -22,6 +22,5 @@ export type TupleValidatorExpression = readonly [
 export interface TupleValidatorOptions {}
 
 export const tupleValidator = createValidator<TupleValidatorExpression, TupleValidatorOptions>({
-  arrayMode: "tuple",
   validate(context) {},
 });

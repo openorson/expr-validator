@@ -1,7 +1,6 @@
-import { ValidatorArrayExpressionMode, ValidatorExpressionAsType } from "./expression";
+import { ValidatorExpressionAsType } from "./expression";
 
-export interface ValidatorFactoryOptions<Expression, Mode extends ValidatorArrayExpressionMode = ValidatorArrayExpressionMode> {
-  arrayMode?: Mode;
+export interface ValidatorFactoryOptions<Expression> {
   validate: (context: {
     expression: Expression;
     value: unknown;

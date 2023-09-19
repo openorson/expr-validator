@@ -32,13 +32,3 @@ export interface ObjectValidatorOptions {}
 export const objectValidator = createValidator<NestedObjectValidatorExpression, ObjectValidatorOptions>({
   validate(context) {},
 });
-
-const obj: unknown = {};
-
-if (
-  objectValidator(obj, {
-    a: ["tuple", "boolean!"],
-  })
-) {
-  obj;
-}
