@@ -18,9 +18,10 @@ type ObjectValidatorFieldExpression =
   | TupleValidatorExpression
   | UnionValidatorExpression;
 
-type ObjectValidatorExpression<Expression = Record<string, ObjectValidatorFieldExpression> | ObjectValidatorFieldExpression> =
-  | Record<string, Expression>
-  | ObjectValidatorFieldExpression;
+type ObjectValidatorExpression<Expression = never> = Record<
+  string,
+  Expression extends never ? ObjectValidatorFieldExpression : ObjectValidatorFieldExpression | Expression
+>;
 
 export type NestedObjectValidatorExpression = ObjectValidatorExpression<
   ObjectValidatorExpression<ObjectValidatorExpression<ObjectValidatorExpression<ObjectValidatorExpression>>>

@@ -4,6 +4,7 @@ import { DateRangeValidatorExpression } from "./data-range";
 import { DateValidatorExpression } from "./date";
 import { NumberValidatorExpression } from "./number";
 import { NumberRangeValidatorExpression } from "./number-range";
+import { NestedObjectValidatorExpression } from "./object";
 import { StringValidatorExpression } from "./string";
 import { TupleValidatorExpression } from "./tuple";
 import { UnionValidatorExpression } from "./union";
@@ -16,10 +17,18 @@ export type AnyValidatorExpression =
   | DateValidatorExpression
   | DateRangeValidatorExpression
   | TupleValidatorExpression
-  | UnionValidatorExpression;
+  | UnionValidatorExpression
+  | NestedObjectValidatorExpression;
 
 export const anyValidator = createValidator<AnyValidatorExpression>({
   validate(context) {},
 });
 
-anyValidator("", ["boolean!", "number!"]);
+const any: unknown = "";
+if (
+  anyValidator(any, {
+    a: "boolean!",
+    b: ["string!", "string!"],
+  })
+) {
+}
