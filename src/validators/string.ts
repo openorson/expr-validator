@@ -2,7 +2,7 @@ import { ValidatorExpression } from "../types/expression";
 import { createValidator } from "../validator/validator";
 
 export type StringValidatorFormatArg = ["", `/${string}/` | `${number}` | `${number}-${number}`];
-export type StringValidatorExpression = ValidatorExpression<"string", [StringValidatorFormatArg]>;
+export type StringValidatorExpression = ValidatorExpression<"string", [StringValidatorFormatArg, ["size", string]]>;
 
 export interface StringValidatorOptions {}
 
