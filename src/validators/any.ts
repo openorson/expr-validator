@@ -1,3 +1,4 @@
+import { ValidatorArrayExpressionTupleMode, ValidatorArrayExpressionUnionMode } from "../types/expression";
 import { createValidator } from "../validator/validator";
 import { BooleanValidatorExpression } from "./boolean";
 import { DateRangeValidatorExpression } from "./data-range";
@@ -16,8 +17,8 @@ export type AnyValidatorExpression =
   | BooleanValidatorExpression
   | DateValidatorExpression
   | DateRangeValidatorExpression
-  | TupleValidatorExpression
-  | UnionValidatorExpression
+  | [ValidatorArrayExpressionTupleMode, ...TupleValidatorExpression]
+  | [ValidatorArrayExpressionUnionMode, ...UnionValidatorExpression]
   | NestedObjectValidatorExpression;
 
 export const anyValidator = createValidator<AnyValidatorExpression>({
@@ -31,4 +32,5 @@ if (
     b: ["string!", "string!"],
   })
 ) {
+  any;
 }
