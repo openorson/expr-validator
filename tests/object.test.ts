@@ -9,6 +9,12 @@ test("object", () => {
       b: "string!",
       c: {
         d: "number!",
+        e: ["union", "boolean!", "string!"],
+        f: {
+          g: {
+            h: "numberRange?{currency}",
+          },
+        },
       },
     })
   ).toBe(true);

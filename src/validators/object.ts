@@ -31,7 +31,7 @@ export interface ObjectValidatorOptions {}
 
 export const objectValidator = createValidator<NestedObjectValidatorExpression, ObjectValidatorOptions>({
   validate(context) {
-    console.log(context);
+    console.log(JSON.stringify(context, null, 2));
     return true;
   },
 });
