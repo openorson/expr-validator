@@ -8,7 +8,7 @@ export function createValidator<Expr, Options extends {} = {}>(factoryOptions: V
     options?: Options & ValidatorOptions
   ): value is Type {
     if (typeof expression === "string") {
-      const matchs = expression.match(/^(\w+)(\[\])?([\!\?])(\{\S*\})?(\(\S*\))?$/);
+      const matchs = expression.match(/^(\w+)(\[\])?([\!\?])(\{.*\})?(\(.*\))?$/);
       if (!matchs) return false;
       let [_, type, each, optional, args, comment] = matchs;
       const valid = factoryOptions.validate({
