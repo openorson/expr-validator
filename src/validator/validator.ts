@@ -17,7 +17,7 @@ export function createValidator<Expr, Options extends {} = {}>(factoryOptions: V
         type,
         each: !!each,
         optional: optional === "?",
-        args: args as unknown as Record<string, string>,
+        args: args ? args.match(/\{.*?\}/g) : {},
         comment,
       });
       return !!valid;
