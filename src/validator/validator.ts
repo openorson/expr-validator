@@ -17,7 +17,15 @@ export function createValidator<Expr, Options extends {} = {}>(factoryOptions: V
         type,
         each: !!each,
         optional: optional === "?",
-        args: args ? args.match(/\{.*?\}/g) : {},
+        args: args
+          ? Object.fromEntries(
+              args.match(/(?<=\{).*?(?=\})/g)?.map((arg) => {
+                const [key, val] = arg.split(":");
+                if (val === void 0) return ["default", key];
+                return [key, val];
+              }) as any
+            )
+          : {},
         comment,
       });
       return !!valid;

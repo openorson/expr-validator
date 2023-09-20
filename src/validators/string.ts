@@ -8,7 +8,6 @@ export interface StringValidatorOptions {}
 
 export const stringValidator = createValidator<StringValidatorExpression, StringValidatorOptions>({
   validate(context) {
-    console.log("context", context);
     return true;
   },
   parse() {},
