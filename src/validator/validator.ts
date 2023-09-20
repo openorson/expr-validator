@@ -20,17 +20,8 @@ export function createValidator<Expr, Options extends {} = {}>(factoryOptions: V
     return [validator(value, expression), "" as Type];
   }
 
-  function prompt<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
-    value: unknown,
-    expression: Expression,
-    options?: ValidatorOptions
-  ): value is Type {
-    return true;
-  }
-
   validator[Symbol.toStringTag] = "ExprValidator";
   validator["parse"] = parse;
-  validator["prompt"] = prompt;
 
   return validator;
 }

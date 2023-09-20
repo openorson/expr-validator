@@ -7,8 +7,6 @@ export interface ValidatorFactoryOptions<Expression> {
 
 export interface ValidatorOptions {
   context?: unknown;
-  parse?: boolean;
-  prompt?: boolean;
   throw?: boolean;
 }
 
