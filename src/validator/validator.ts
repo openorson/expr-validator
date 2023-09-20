@@ -1,3 +1,4 @@
+import { parseExpression } from "../common";
 import { ValidatorExpressionAsType } from "../types/expression";
 import { Validator, ValidatorFactoryOptions, ValidatorOptions } from "../types/validator";
 
@@ -7,30 +8,8 @@ export function createValidator<Expr, Options extends {} = {}>(factoryOptions: V
     expression: Expression,
     options?: Options & ValidatorOptions
   ): value is Type {
-    if (typeof expression === "string") {
-      const matchs = expression.match(/^(\w+)(\[\])?([\!\?])(\{.*\})?(\(.*\))?$/);
-      if (!matchs) return false;
-      let [_, type, each, optional, args, comment] = matchs;
-      const valid = factoryOptions.validate({
-        expression,
-        value,
-        type,
-        each: !!each,
-        optional: optional === "?",
-        args: args
-          ? Object.fromEntries(
-              args.match(/(?<=\{).*?(?=\})/g)?.map((arg) => {
-                const [key, val] = arg.split(":");
-                if (val === void 0) return ["default", key];
-                return [key, val];
-              }) as any
-            )
-          : {},
-        comment,
-      });
-      return !!valid;
-    }
-    return true;
+    const valid = factoryOptions.validate({ expression, value, meta: parseExpression(expression) });
+    return !!valid;
   }
 
   function parse<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(

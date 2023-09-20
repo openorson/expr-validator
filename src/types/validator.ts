@@ -1,15 +1,7 @@
 import { ValidatorExpressionAsType } from "./expression";
 
 export interface ValidatorFactoryOptions<Expression> {
-  validate: (context: {
-    expression: Expression;
-    value: unknown;
-    type: string;
-    each: boolean;
-    optional: boolean;
-    args: Record<string, string>;
-    comment: string;
-  }) => unknown;
+  validate: (context: { expression: Expression; value: unknown; meta: unknown }) => unknown;
   parse?: () => unknown;
 }
 

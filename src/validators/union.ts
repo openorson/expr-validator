@@ -22,5 +22,7 @@ export type UnionValidatorExpression = readonly [
 export interface UnionValidatorOptions {}
 
 export const unionValidator = createValidator<UnionValidatorExpression, UnionValidatorOptions>({
-  validate(context) {},
+  validate(context) {
+    return true;
+  },
 });
