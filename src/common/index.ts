@@ -1,4 +1,6 @@
-export function parseStringExpression(expression: string) {
+import { StringExpressionParse } from "../types/validator";
+
+export function parseStringExpression(expression: string): StringExpressionParse {
   const matchs = expression.match(/^(\w+)(\[\])?([\!\?])(\{.*\})?(\(.*\))?$/);
   if (!matchs) throw new Error("Invalid expression");
   let [_, type, each, optional, args, comment] = matchs;
@@ -52,4 +54,20 @@ export function parseExpression(expression: unknown) {
   if (type === "[object Object]") return parseObjectExpression(expression as Record<string, unknown>);
   if (type === "[object Array]") return parseArrayExpression(expression as string[]);
   throw new Error("Invalid expression");
+}
+
+export function validateType(value: unknown, parse: StringExpressionParse, type: (value: unknown) => boolean) {
+  if (parse.optional) {
+    if (value === null || value === void 0) return true;
+  } else {
+    if (value === null || value === void 0) return false;
+  }
+
+  if (parse.each) {
+    if (!Array.isArray(value)) return false;
+    return value.some((item) => type(item));
+  } else {
+    if (Array.isArray(value)) return false;
+    return type(value);
+  }
 }
