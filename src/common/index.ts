@@ -1,6 +1,6 @@
 export function parseStringExpression(expression: string) {
   const matchs = expression.match(/^(\w+)(\[\])?([\!\?])(\{.*\})?(\(.*\))?$/);
-  if (!matchs) return null;
+  if (!matchs) throw new Error("Invalid expression");
   let [_, type, each, optional, args, comment] = matchs;
   return {
     type,
