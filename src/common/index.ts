@@ -51,7 +51,8 @@ export function parseObjectExpression(expression: Record<string, unknown>) {
 }
 
 export function* parseObjectExpressionGenerator(
-  expression: Record<string, unknown>
+  expression: Record<string, unknown>,
+  key: string = ""
 ): Generator<{ path: string; parse: StringExpressionParse | (string | StringExpressionParse[])[] }> {
   let clone = Object.assign({}, expression);
   const keys = Object.keys(clone);
@@ -59,15 +60,16 @@ export function* parseObjectExpressionGenerator(
   let index = 0;
   while (index < keys.length) {
     const type = Object.prototype.toString.call(expression[keys[index]]);
+    const path = key ? `${key}.${keys[index]}` : keys[index];
 
     if (type === "[object String]") {
-      yield { path: keys[index], parse: parseStringExpression(expression[keys[index]] as string) };
+      yield { path, parse: parseStringExpression(expression[keys[index]] as string) };
     } else if (type === "[object Object]") {
-      for (const iterator of parseObjectExpressionGenerator(expression[keys[index]] as Record<string, unknown>)) {
+      for (const iterator of parseObjectExpressionGenerator(expression[keys[index]] as Record<string, unknown>, path)) {
         yield iterator;
       }
     } else if (type === "[object Array]") {
-      yield { path: keys[index], parse: parseArrayExpression(expression[keys[index]] as string[]) };
+      yield { path, parse: parseArrayExpression(expression[keys[index]] as string[]) };
     } else {
       throw new Error("Invalid expression");
     }
