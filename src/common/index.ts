@@ -29,6 +29,7 @@ export function parseArrayExpression(expression: string[]) {
 export function parseObjectExpression(expression: Record<string, unknown>) {
   let clone = Object.assign({}, expression);
   const keys = Object.keys(clone);
+
   let index = 0;
   while (index < keys.length) {
     const type = Object.prototype.toString.call(expression[keys[index]]);
@@ -45,13 +46,43 @@ export function parseObjectExpression(expression: Record<string, unknown>) {
 
     index++;
   }
+
   return clone;
 }
 
-export function parseExpression(expression: unknown) {
+export function* parseObjectExpressionGenerator(expression: Record<string, unknown>): any {
+  let clone = Object.assign({}, expression);
+  const keys = Object.keys(clone);
+
+  let index = 0;
+  while (index < keys.length) {
+    const type = Object.prototype.toString.call(expression[keys[index]]);
+
+    if (type === "[object String]") {
+      yield { key: keys[index], value: parseStringExpression(expression[keys[index]] as string) };
+    } else if (type === "[object Object]") {
+      for (const iterator of parseObjectExpressionGenerator(expression[keys[index]] as Record<string, unknown>)) {
+        yield iterator;
+      }
+    } else if (type === "[object Array]") {
+      yield { key: keys[index], value: parseArrayExpression(expression[keys[index]] as string[]) };
+    } else {
+      throw new Error("Invalid expression");
+    }
+
+    index++;
+  }
+
+  return clone;
+}
+
+export function parseExpression(expression: unknown, generator?: boolean) {
   const type = Object.prototype.toString.call(expression);
   if (type === "[object String]") return parseStringExpression(expression as string);
-  if (type === "[object Object]") return parseObjectExpression(expression as Record<string, unknown>);
+  if (type === "[object Object]")
+    return generator
+      ? parseObjectExpressionGenerator(expression as Record<string, unknown>)
+      : parseObjectExpression(expression as Record<string, unknown>);
   if (type === "[object Array]") return parseArrayExpression(expression as string[]);
   throw new Error("Invalid expression");
 }
