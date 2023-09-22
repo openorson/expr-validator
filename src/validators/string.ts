@@ -7,6 +7,7 @@ export type StringValidatorExpression = ValidatorExpression<"string", [StringVal
 export interface StringValidatorOptions {}
 
 export const stringValidator = createValidator<StringValidatorExpression, StringValidatorOptions>({
+  type: (value) => typeof value === "string",
   validate(context) {
     return true;
   },

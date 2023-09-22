@@ -8,7 +8,8 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
     expression: Expression,
     options?: Options & ValidateOptions
   ): value is Type {
-    const valid = validatorOptions.validate({ expression, value, parse: parseExpression(expression) as ExpressionParse<Expression> });
+    const parse = parseExpression(expression) as ExpressionParse<Expression>;
+    const valid = validatorOptions.validate?.({ expression, value, parse });
     return !!valid;
   }
 
