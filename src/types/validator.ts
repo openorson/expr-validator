@@ -27,13 +27,12 @@ export type ExpressionParse<Expression> = Expression extends Record<string, unkn
 
 export interface ValidateContext<Expression> {
   expression: Expression;
-  value: any;
+  value: unknown;
   parse: ExpressionParse<Expression>;
 }
 
 export interface ValidatorOptions<Expression> {
-  type: (value: unknown) => unknown;
-  validate?: (context: ValidateContext<Expression>) => unknown;
+  validate: (context: ValidateContext<Expression>) => unknown;
   parse?: () => unknown;
 }
 

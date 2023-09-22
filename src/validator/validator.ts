@@ -1,4 +1,5 @@
 import { parseExpression } from "../common";
+import { ValidatorError } from "../error";
 import { ValidatorExpressionAsType } from "../types/expression";
 import { Validator, ValidatorOptions, ValidateOptions, ParseOptions, ExpressionParse } from "../types/validator";
 
@@ -9,8 +10,9 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
     options?: Options & ValidateOptions
   ): value is Type {
     const parse = parseExpression(expression, true) as ExpressionParse<Expression>;
-    const valid = validatorOptions.validate?.({ expression, value, parse });
-    return !!valid;
+    const valid = !!validatorOptions.validate({ expression, value, parse });
+    if (!valid && options?.throw) throw new ValidatorError("验证失败");
+    return valid;
   }
 
   function parse<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(

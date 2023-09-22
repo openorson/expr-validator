@@ -12,7 +12,7 @@ export function parseStringExpression(expression: string): StringExpressionParse
       ? Object.fromEntries(
           args.match(/(?<=\{).*?(?=\})/g)?.map((arg) => {
             const [key, val] = arg.split(":");
-            if (val === void 0) return ["default", key];
+            if (val === void 0) return ["$", key];
             return [key, val];
           }) ?? []
         )
@@ -91,7 +91,7 @@ export function parseExpression(expression: unknown, generator?: boolean) {
   throw new Error("Invalid expression");
 }
 
-export function validateType(value: unknown, parse: StringExpressionParse, type: (value: unknown) => boolean) {
+export function typer<Type>(value: unknown, parse: StringExpressionParse, type: (value: unknown) => boolean): value is Type {
   if (parse.optional) {
     if (value === null || value === void 0) return true;
   } else {
