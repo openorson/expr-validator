@@ -59,13 +59,13 @@ export function* parseObjectExpressionGenerator(expression: Record<string, unkno
     const type = Object.prototype.toString.call(expression[keys[index]]);
 
     if (type === "[object String]") {
-      yield { key: keys[index], value: parseStringExpression(expression[keys[index]] as string) };
+      yield { path: keys[index], parse: parseStringExpression(expression[keys[index]] as string) };
     } else if (type === "[object Object]") {
       for (const iterator of parseObjectExpressionGenerator(expression[keys[index]] as Record<string, unknown>)) {
         yield iterator;
       }
     } else if (type === "[object Array]") {
-      yield { key: keys[index], value: parseArrayExpression(expression[keys[index]] as string[]) };
+      yield { path: keys[index], parse: parseArrayExpression(expression[keys[index]] as string[]) };
     } else {
       throw new Error("Invalid expression");
     }

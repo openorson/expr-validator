@@ -27,6 +27,7 @@ export interface ValidateContext<Expression> {
 }
 
 export interface ValidatorOptions<Expression> {
+  generator?: boolean;
   type: (value: unknown) => unknown;
   validate?: (context: ValidateContext<Expression>) => unknown;
   parse?: () => unknown;
