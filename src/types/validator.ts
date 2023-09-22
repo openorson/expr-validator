@@ -32,8 +32,8 @@ export interface ValidateContext<Expression> {
 }
 
 export interface ValidatorOptions<Expression> {
-  validate: (context: ValidateContext<Expression>) => unknown;
-  parse?: () => unknown;
+  validate: (context: ValidateContext<Expression>) => string | void;
+  parse?: (value: unknown) => unknown;
 }
 
 export interface ValidateOptions {

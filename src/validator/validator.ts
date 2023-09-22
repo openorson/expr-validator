@@ -10,9 +10,14 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
     options?: Options & ValidateOptions
   ): value is Type {
     const parse = parseExpression(expression, true) as ExpressionParse<Expression>;
-    const valid = !!validatorOptions.validate({ expression, value, parse });
-    if (!valid && options?.throw) throw new ValidatorError("验证失败");
-    return valid;
+    const valid = validatorOptions.validate({ expression, value, parse });
+
+    if (typeof valid === "string") {
+      if (options?.throw) throw new ValidatorError(valid);
+      return false;
+    } else {
+      return true;
+    }
   }
 
   function parse<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
