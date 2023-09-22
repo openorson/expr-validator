@@ -1,5 +1,9 @@
 import { StringExpressionParse } from "../types/validator";
 
+export function typeOf(value: unknown) {
+  return Object.prototype.toString.call(value).toLowerCase().slice(8, -1);
+}
+
 export function parseStringExpression(expression: string): StringExpressionParse {
   const matchs = expression.match(/^(\w+)(\[\])?([\!\?])(\{.*\})?(\(.*\))?$/);
   if (!matchs) throw new Error("Invalid expression");

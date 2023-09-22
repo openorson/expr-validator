@@ -1,10 +1,11 @@
-import { typer } from "../common";
+import { typeOf, typer } from "../common";
+import { validationErrorMessage } from "../error";
 import { pattern } from "../pattern";
 import { ValidatorExpression } from "../types/expression";
 import { createValidator } from "../validator/validator";
 
 export type StringValidatorPattern = keyof typeof pattern;
-export type StringValidatorFormatArg = ["", `/${string}/` | `${number}` | `${number}-${number}` | StringValidatorPattern];
+export type StringValidatorFormatArg = ["", `/${string}/` | `${number}~` | `~${number}` | `${number}~${number}` | StringValidatorPattern];
 export type StringValidatorExpression = ValidatorExpression<"string", [StringValidatorFormatArg]>;
 
 export interface StringValidatorOptions {}
@@ -12,14 +13,26 @@ export interface StringValidatorOptions {}
 export const stringValidator = createValidator<StringValidatorExpression, StringValidatorOptions>({
   validate({ value, parse }) {
     if (!typer<string>(value, parse, (v) => typeof v === "string")) {
-      return "类型错误";
+      return validationErrorMessage({
+        comment: parse.comment,
+        type: "类型",
+        expect: "string",
+        actual: typeOf(value),
+        value,
+      });
     }
 
     const { $ } = parse.args ?? {};
 
     if (!$) {
       if (value.length < 1 || value.length >= 256) {
-        return `值"${value}"长度需在1-256之间`;
+        return validationErrorMessage({
+          comment: parse.comment,
+          type: "长度",
+          expect: "[1,256)",
+          actual: value.length,
+          value,
+        });
       }
     } else {
       if ($.indexOf("/") === 0) {

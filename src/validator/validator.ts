@@ -1,5 +1,5 @@
 import { parseExpression } from "../common";
-import { ValidatorError } from "../error";
+import { ValidationError } from "../error";
 import { ValidatorExpressionAsType } from "../types/expression";
 import { Validator, ValidatorOptions, ValidateOptions, ParseOptions, ExpressionParse } from "../types/validator";
 
@@ -17,12 +17,12 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
         if (options.throw) {
           if (options.message) {
             if (typeof options.message === "function") {
-              throw new ValidatorError(options.message({ value }));
+              throw new ValidationError(options.message({ value }));
             } else {
-              throw new ValidatorError(options.message);
+              throw new ValidationError(options.message);
             }
           } else {
-            throw new ValidatorError(valid);
+            throw new ValidationError(valid);
           }
         } else {
           return false;
