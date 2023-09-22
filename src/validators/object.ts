@@ -31,8 +31,12 @@ export interface ObjectValidatorOptions {}
 
 export const objectValidator = createValidator<NestedObjectValidatorExpression, ObjectValidatorOptions>({
   type: (value) => typeof value === "object",
-  validate(context: any) {
-    console.log(context.parse.next());
+  validate(context) {
+    let done = false;
+    while (!done) {
+      const result = context.parse.next();
+      done = result.done ?? true;
+    }
     return true;
   },
 });

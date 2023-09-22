@@ -1,4 +1,9 @@
-import { ValidatorArrayExpressionTupleMode, ValidatorArrayExpressionUnionMode, ValidatorExpressionAsType } from "./expression";
+import {
+  ValidatorArrayExpressionMode,
+  ValidatorArrayExpressionTupleMode,
+  ValidatorArrayExpressionUnionMode,
+  ValidatorExpressionAsType,
+} from "./expression";
 
 export interface StringExpressionParse {
   type: string;
@@ -9,7 +14,7 @@ export interface StringExpressionParse {
 }
 
 export type ExpressionParse<Expression> = Expression extends Record<string, unknown>
-  ? Record<string, StringExpressionParse>
+  ? Generator<{ path: string; parse: StringExpressionParse | [ValidatorArrayExpressionMode, ...StringExpressionParse[]] }>
   : Expression extends string
   ? StringExpressionParse
   : Expression extends readonly unknown[]
@@ -27,7 +32,6 @@ export interface ValidateContext<Expression> {
 }
 
 export interface ValidatorOptions<Expression> {
-  generator?: boolean;
   type: (value: unknown) => unknown;
   validate?: (context: ValidateContext<Expression>) => unknown;
   parse?: () => unknown;

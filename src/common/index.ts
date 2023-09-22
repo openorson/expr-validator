@@ -50,7 +50,9 @@ export function parseObjectExpression(expression: Record<string, unknown>) {
   return clone;
 }
 
-export function* parseObjectExpressionGenerator(expression: Record<string, unknown>): any {
+export function* parseObjectExpressionGenerator(
+  expression: Record<string, unknown>
+): Generator<{ path: string; parse: StringExpressionParse | (string | StringExpressionParse[])[] }> {
   let clone = Object.assign({}, expression);
   const keys = Object.keys(clone);
 
@@ -82,7 +84,7 @@ export function parseExpression(expression: unknown, generator?: boolean) {
   if (type === "[object Object]")
     return generator
       ? parseObjectExpressionGenerator(expression as Record<string, unknown>)
-      : parseObjectExpression(expression as Record<string, unknown>);
+      : parseObjectExpression(expression as Record<string, any>);
   if (type === "[object Array]") return parseArrayExpression(expression as string[]);
   throw new Error("Invalid expression");
 }
