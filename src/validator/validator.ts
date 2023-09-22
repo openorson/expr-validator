@@ -13,8 +13,23 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
     const valid = validatorOptions.validate({ expression, value, parse });
 
     if (typeof valid === "string") {
-      if (options?.throw) throw new ValidatorError(valid);
-      return false;
+      if (options) {
+        if (options.throw) {
+          if (options.message) {
+            if (typeof options.message === "function") {
+              throw new ValidatorError(options.message({ value }));
+            } else {
+              throw new ValidatorError(options.message);
+            }
+          } else {
+            throw new ValidatorError(valid);
+          }
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
     } else {
       return true;
     }

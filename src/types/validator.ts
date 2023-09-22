@@ -38,6 +38,7 @@ export interface ValidatorOptions<Expression> {
 
 export interface ValidateOptions {
   throw?: boolean;
+  message?: string | ((context: { value: unknown }) => string);
 }
 
 export interface ParseOptions {}
