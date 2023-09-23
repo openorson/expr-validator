@@ -40,7 +40,8 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
     expression: Expression,
     options?: Options & ValidateOptions & ParseOptions
   ): [valid: true, value: Type] | [valid: false, value: unknown] {
-    return [validator(value, expression), "" as Type];
+    const parseValue = validatorOptions.parse?.(value) ?? value;
+    return [validator(parseValue, expression, options), parseValue as Type];
   }
 
   validator[Symbol.toStringTag] = "ExprValidator";

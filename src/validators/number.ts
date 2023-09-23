@@ -1,16 +1,68 @@
-import { typer } from "../common";
+import { typeOf, typer } from "../common";
+import { ValidationError } from "../error";
 import { ValidatorExpression } from "../types/expression";
 import { createValidator } from "../validator/validator";
 
-export type NumberValidatorFormatArg = ["", `${number}~${number}` | `${number}.${number}`];
-export type NumberValidatorExpression = ValidatorExpression<"number", [NumberValidatorFormatArg]>;
+export type NumberValidatorPrecisionArg = ["", `${number}.` | `.${number}` | `${number}.${number}`];
+export type NumberValidatorRangeArg = ["", `${number}~` | `~${number}` | `${number}~${number}`];
+export type NumberValidatorExpression1 = ValidatorExpression<"number", [NumberValidatorPrecisionArg, NumberValidatorRangeArg]>;
+export type NumberValidatorExpression2 = ValidatorExpression<"number", [NumberValidatorRangeArg, NumberValidatorPrecisionArg]>;
+export type NumberValidatorExpression = NumberValidatorExpression1 | NumberValidatorExpression2;
 
 export interface NumberValidatorOptions {}
 
 export const numberValidator = createValidator<NumberValidatorExpression, NumberValidatorOptions>({
   validate({ value, parse }) {
     if (!typer<number>(value, parse, (v) => typeof v === "number")) {
-      return "类型错误";
+      return ValidationError.message({ comment: parse.comment, type: "类型", expect: "number", actual: typeOf(value) });
     }
+
+    const { $1, $2 } = parse.args ?? {};
+
+    if (!$1 && !$2) return;
+
+    if ($1?.includes(".") || $2?.includes(".")) {
+      const [integerLength, decimalLength] = ($1?.includes(".") ? $1 : $2).split(".");
+      const [integer, decimal = ""] = String(value).split(".");
+      if (integerLength && decimalLength && (integer.length > +integerLength || decimal.length > +decimalLength)) {
+        return ValidationError.message({
+          comment: parse.comment,
+          type: "位数",
+          expect: `：整数位数${integerLength}，小数位数${decimalLength}`,
+          actual: `：整数位数${integer.length}，小数位数${decimal.length}`,
+        });
+      }
+      if (integerLength && !decimalLength && integer.length > +integerLength) {
+        return ValidationError.message({ comment: parse.comment, type: "整数位数", expect: `小于等于${integerLength}`, actual: integer.length });
+      }
+      if (!integerLength && decimalLength && decimal.length > +decimalLength) {
+        return ValidationError.message({ comment: parse.comment, type: "小数位数", expect: `小于等于${decimalLength}`, actual: decimal.length });
+      }
+    }
+
+    if ($1?.includes("~") || $2?.includes("~")) {
+      const [min, max] = ($1?.includes("~") ? $1 : $2).split("~");
+      if (min && max && (value < +min || value > +max)) {
+        return ValidationError.message({ comment: parse.comment, type: "数值大小", expect: `${min}~${max}`, actual: value });
+      }
+      if (min && !max && value < +min) {
+        return ValidationError.message({ comment: parse.comment, type: "数值大小", expect: `大于等于${min}`, actual: value });
+      }
+      if (!min && max && value > +max) {
+        return ValidationError.message({ comment: parse.comment, type: "数值大小", expect: `小于${max}`, actual: value });
+      }
+    }
+  },
+  parse(value) {
+    if (typeof value === "number") return value;
+    if (typeof value === "string") {
+      const number = Number(value);
+      if (Number.isNaN(number)) {
+        return value;
+      } else {
+        return number;
+      }
+    }
+    return value;
   },
 });

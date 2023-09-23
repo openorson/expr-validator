@@ -14,9 +14,9 @@ export function parseStringExpression(expression: string): StringExpressionParse
     optional: optional === "?",
     args: args
       ? Object.fromEntries(
-          args.match(/(?<=\{).*?(?=\})/g)?.map((arg) => {
+          args.match(/(?<=\{).*?(?=\})/g)?.map((arg, index) => {
             const [key, val] = arg.split(":");
-            if (val === void 0) return ["$", key];
+            if (val === void 0) return [`$${index + 1}`, key];
             return [key, val];
           }) ?? []
         )
