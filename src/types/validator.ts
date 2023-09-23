@@ -38,7 +38,7 @@ export interface ValidateInvalidResult {
 
 export interface ValidatorOptions<Expression> {
   validate: (context: ValidateContext<Expression>) => ValidateInvalidResult | void;
-  parse?: (value: unknown) => unknown;
+  parse?: (context: ValidateContext<Expression>) => unknown;
 }
 
 export interface ValidateOptions {
@@ -50,10 +50,12 @@ export interface ParseOptions {}
 
 export interface Validator<Expr, Options extends {}> {
   readonly [Symbol.toStringTag]: string;
+  $options: ValidatorOptions<Expr>;
   <const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
     value: unknown,
     expression: Expression,
-    options?: Options & ValidateOptions
+    options?: Options & ValidateOptions,
+    parse?: ExpressionParse<Expression>
   ): value is Type;
   parse<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
     value: unknown,

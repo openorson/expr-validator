@@ -1,4 +1,4 @@
-import { typer } from "../common";
+import { typeCheck } from "../common";
 import { pattern } from "../pattern";
 import { ValidatorExpression } from "../types/expression";
 import { createValidator } from "../validator/validator";
@@ -11,7 +11,7 @@ export interface StringValidatorOptions {}
 
 export const stringValidator = createValidator<StringValidatorExpression, StringValidatorOptions>({
   validate({ value, parse }) {
-    if (!typer<string>(value, parse, (v) => typeof v === "string")) {
+    if (!typeCheck<string>(value, parse, (v) => typeof v === "string")) {
       return { type: "invalid", comment: parse.comment };
     }
 
@@ -45,7 +45,7 @@ export const stringValidator = createValidator<StringValidatorExpression, String
       }
     }
   },
-  parse(value) {
+  parse({ value }) {
     if (typeof value === "string") return value.trim();
     if (typeof value === "number") return String(value);
     return value;

@@ -7,9 +7,10 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
   function validator<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
     value: unknown,
     expression: Expression,
-    options?: Options & ValidateOptions
+    options?: Options & ValidateOptions,
+    _parse?: ExpressionParse<Expression>
   ): value is Type {
-    const parse = parseExpression(expression, true) as ExpressionParse<Expression>;
+    const parse = _parse ?? (parseExpression(expression, true) as ExpressionParse<Expression>);
     const valid = validatorOptions.validate({ expression, value, parse });
 
     if (valid) {
@@ -44,11 +45,13 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
     expression: Expression,
     options?: Options & ValidateOptions & ParseOptions
   ): [valid: true, value: Type] | [valid: false, value: unknown] {
-    const parseValue = validatorOptions.parse?.(value) ?? value;
-    return [validator(parseValue, expression, options), parseValue as Type];
+    const parse = parseExpression(expression, true) as ExpressionParse<Expression>;
+    const parseValue = validatorOptions.parse?.({ expression, value, parse }) ?? value;
+    return [validator(parseValue, expression, options, parse), parseValue as Type];
   }
 
   validator[Symbol.toStringTag] = "ExprValidator";
+  validator["$options"] = validatorOptions;
   validator["parse"] = parse;
 
   return validator;

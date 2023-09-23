@@ -1,4 +1,4 @@
-import { typer } from "../common";
+import { typeCheck } from "../common";
 import { ValidatorExpression } from "../types/expression";
 import { createValidator } from "../validator/validator";
 
@@ -12,7 +12,7 @@ export interface NumberValidatorOptions {}
 
 export const numberValidator = createValidator<NumberValidatorExpression, NumberValidatorOptions>({
   validate({ value, parse }) {
-    if (!typer<number>(value, parse, (v) => typeof v === "number")) {
+    if (!typeCheck<number>(value, parse, (v) => typeof v === "number")) {
       return { type: "invalid", comment: parse.comment };
     }
 
@@ -47,7 +47,7 @@ export const numberValidator = createValidator<NumberValidatorExpression, Number
       }
     }
   },
-  parse(value) {
+  parse({ value }) {
     if (typeof value === "number") return value;
     if (typeof value === "string") {
       const number = Number(value);

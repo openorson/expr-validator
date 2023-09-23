@@ -27,7 +27,7 @@ export function parseStringExpression(expression: string): StringExpressionParse
 
 export function parseArrayExpression(expression: string[]) {
   const [mode, ...expressions] = expression as string[];
-  return [mode, expressions.map((expression) => parseStringExpression(expression))];
+  return [mode, ...expressions.map((expression) => parseStringExpression(expression))] as const;
 }
 
 export function parseObjectExpression(expression: Record<string, unknown>) {
@@ -57,7 +57,7 @@ export function parseObjectExpression(expression: Record<string, unknown>) {
 export function* parseObjectExpressionGenerator(
   expression: Record<string, unknown>,
   key: string = ""
-): Generator<{ path: string; parse: StringExpressionParse | (string | StringExpressionParse[])[] }> {
+): Generator<{ path: string; parse: StringExpressionParse | readonly [string, ...StringExpressionParse[]] }> {
   let clone = Object.assign({}, expression);
   const keys = Object.keys(clone);
 
@@ -95,7 +95,7 @@ export function parseExpression(expression: unknown, generator?: boolean) {
   throw new Error("Invalid expression");
 }
 
-export function typer<Type>(value: unknown, parse: StringExpressionParse, type: (value: unknown) => boolean, arrayValue?: boolean): value is Type {
+export function typeCheck<Type>(value: unknown, parse: StringExpressionParse, isType: (value: unknown) => boolean): value is Type {
   if (parse.optional) {
     if (value === null || value === void 0) return true;
   } else {
@@ -104,9 +104,9 @@ export function typer<Type>(value: unknown, parse: StringExpressionParse, type: 
 
   if (parse.each) {
     if (!Array.isArray(value)) return false;
-    return value.some((item) => type(item));
+    return value.some((item) => isType(item));
   } else {
-    if (!arrayValue && Array.isArray(value)) return false;
-    return type(value);
+    if (Array.isArray(value)) return false;
+    return isType(value);
   }
 }
