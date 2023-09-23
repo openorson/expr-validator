@@ -4,6 +4,10 @@ export function typeOf(value: unknown) {
   return Object.prototype.toString.call(value).toLowerCase().slice(8, -1);
 }
 
+export function deepGet(object: any, keys: string[]): unknown {
+  return keys.reduce((xs, x) => (xs && xs[x] !== null && xs[x] !== void 0 ? xs[x] : null), object);
+}
+
 export function parseStringExpression(expression: string): StringExpressionParse {
   const matchs = expression.match(/^(\w+)(\[\])?([\!\?])(\{.*\})?(\(.*\))?$/);
   if (!matchs) throw new Error("Invalid expression");

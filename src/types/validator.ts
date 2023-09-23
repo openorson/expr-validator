@@ -14,7 +14,7 @@ export interface StringExpressionParse {
 }
 
 export type ExpressionParse<Expression> = Expression extends Record<string, unknown>
-  ? Generator<{ path: string; parse: StringExpressionParse | [ValidatorArrayExpressionMode, ...StringExpressionParse[]] }>
+  ? Generator<{ path: string; expression: unknown; parse: StringExpressionParse | [ValidatorArrayExpressionMode, ...StringExpressionParse[]] }>
   : Expression extends string
   ? StringExpressionParse
   : Expression extends readonly unknown[]
