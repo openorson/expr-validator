@@ -95,7 +95,7 @@ export function parseExpression(expression: unknown, generator?: boolean) {
   throw new Error("Invalid expression");
 }
 
-export function typer<Type>(value: unknown, parse: StringExpressionParse, type: (value: unknown) => boolean): value is Type {
+export function typer<Type>(value: unknown, parse: StringExpressionParse, type: (value: unknown) => boolean, arrayValue?: boolean): value is Type {
   if (parse.optional) {
     if (value === null || value === void 0) return true;
   } else {
@@ -106,7 +106,7 @@ export function typer<Type>(value: unknown, parse: StringExpressionParse, type: 
     if (!Array.isArray(value)) return false;
     return value.some((item) => type(item));
   } else {
-    if (Array.isArray(value)) return false;
+    if (!arrayValue && Array.isArray(value)) return false;
     return type(value);
   }
 }

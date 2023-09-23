@@ -34,12 +34,8 @@
     "url": "https://github.com/openorson/expr-validator.git"
   },
   "license": "ISC",
-  "dependencies": {
-    "validator": "^13.11.0"
-  },
   "devDependencies": {
     "@types/node": "^20.6.0",
-    "@types/validator": "^13.11.1",
     "terser": "^5.19.4",
     "tsup": "^7.2.0",
     "typescript": "^5.2.2",

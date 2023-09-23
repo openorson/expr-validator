@@ -5,8 +5,8 @@ import { ValidatorExpression } from "../types/expression";
 import { createValidator } from "../validator/validator";
 
 export type StringValidatorPattern = keyof typeof pattern;
-export type StringValidatorFormatArg = ["", `/${string}/` | `${number}~` | `~${number}` | `${number}~${number}` | StringValidatorPattern];
-export type StringValidatorExpression = ValidatorExpression<"string", [StringValidatorFormatArg]>;
+export type StringValidatorArg = ["", `/${string}/` | `${number}~` | `~${number}` | `${number}~${number}` | StringValidatorPattern];
+export type StringValidatorExpression = ValidatorExpression<"string", [StringValidatorArg]>;
 
 export interface StringValidatorOptions {}
 

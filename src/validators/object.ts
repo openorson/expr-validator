@@ -30,8 +30,7 @@ export type NestedObjectValidatorExpression = ObjectValidatorExpression<
 export interface ObjectValidatorOptions {}
 
 export const objectValidator = createValidator<NestedObjectValidatorExpression, ObjectValidatorOptions>({
-  type: (value) => typeof value === "object",
   validate(context) {
-    return true;
+    return;
   },
 });
