@@ -11,9 +11,7 @@ test("object", () => {
         d: "number!",
         e: ["union", "boolean!", "string!"],
         f: {
-          g: {
-            h: "numberRange?{currency}",
-          },
+          g: {},
         },
       },
     })
