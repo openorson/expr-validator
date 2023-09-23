@@ -31,8 +31,13 @@ export interface ValidateContext<Expression> {
   parse: ExpressionParse<Expression>;
 }
 
+export interface ValidateInvalidResult {
+  type: "invalid";
+  comment?: string;
+}
+
 export interface ValidatorOptions<Expression> {
-  validate: (context: ValidateContext<Expression>) => string | void;
+  validate: (context: ValidateContext<Expression>) => ValidateInvalidResult | void;
   parse?: (value: unknown) => unknown;
 }
 

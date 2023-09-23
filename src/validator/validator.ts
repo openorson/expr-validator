@@ -12,23 +12,27 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
     const parse = parseExpression(expression, true) as ExpressionParse<Expression>;
     const valid = validatorOptions.validate({ expression, value, parse });
 
-    if (typeof valid === "string") {
-      if (options) {
-        if (options.throw) {
-          if (options.message) {
-            if (typeof options.message === "function") {
-              throw new ValidationError(options.message({ value }));
+    if (valid) {
+      if (valid.type === "invalid") {
+        if (options) {
+          if (options.throw) {
+            if (options.message) {
+              if (typeof options.message === "function") {
+                throw new ValidationError(options.message({ value }));
+              } else {
+                throw new ValidationError(options.message);
+              }
             } else {
-              throw new ValidationError(options.message);
+              throw new ValidationError(`数据${valid.comment ?? ""}无效；应符合 => "${expression}"；值 => "${value}"`);
             }
           } else {
-            throw new ValidationError(valid);
+            return false;
           }
         } else {
           return false;
         }
       } else {
-        return false;
+        return true;
       }
     } else {
       return true;

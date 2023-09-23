@@ -1,5 +1,4 @@
-import { typeOf, typer } from "../common";
-import { ValidationError } from "../error";
+import { typer } from "../common";
 import { ValidatorExpression } from "../types/expression";
 import { createValidator } from "../validator/validator";
 
@@ -14,7 +13,7 @@ export interface NumberValidatorOptions {}
 export const numberValidator = createValidator<NumberValidatorExpression, NumberValidatorOptions>({
   validate({ value, parse }) {
     if (!typer<number>(value, parse, (v) => typeof v === "number")) {
-      return ValidationError.message({ comment: parse.comment, type: "类型", expect: "number", actual: typeOf(value) });
+      return { type: "invalid", comment: parse.comment };
     }
 
     const { $1, $2 } = parse.args ?? {};
@@ -25,31 +24,26 @@ export const numberValidator = createValidator<NumberValidatorExpression, Number
       const [integerLength, decimalLength] = ($1?.includes(".") ? $1 : $2).split(".");
       const [integer, decimal = ""] = String(value).split(".");
       if (integerLength && decimalLength && (integer.length > +integerLength || decimal.length > +decimalLength)) {
-        return ValidationError.message({
-          comment: parse.comment,
-          type: "位数",
-          expect: `：整数位数${integerLength}，小数位数${decimalLength}`,
-          actual: `：整数位数${integer.length}，小数位数${decimal.length}`,
-        });
+        return { type: "invalid", comment: parse.comment };
       }
       if (integerLength && !decimalLength && integer.length > +integerLength) {
-        return ValidationError.message({ comment: parse.comment, type: "整数位数", expect: `小于等于${integerLength}`, actual: integer.length });
+        return { type: "invalid", comment: parse.comment };
       }
       if (!integerLength && decimalLength && decimal.length > +decimalLength) {
-        return ValidationError.message({ comment: parse.comment, type: "小数位数", expect: `小于等于${decimalLength}`, actual: decimal.length });
+        return { type: "invalid", comment: parse.comment };
       }
     }
 
     if ($1?.includes("~") || $2?.includes("~")) {
       const [min, max] = ($1?.includes("~") ? $1 : $2).split("~");
       if (min && max && (value < +min || value > +max)) {
-        return ValidationError.message({ comment: parse.comment, type: "数值大小", expect: `${min}~${max}`, actual: value });
+        return { type: "invalid", comment: parse.comment };
       }
       if (min && !max && value < +min) {
-        return ValidationError.message({ comment: parse.comment, type: "数值大小", expect: `大于等于${min}`, actual: value });
+        return { type: "invalid", comment: parse.comment };
       }
       if (!min && max && value > +max) {
-        return ValidationError.message({ comment: parse.comment, type: "数值大小", expect: `小于${max}`, actual: value });
+        return { type: "invalid", comment: parse.comment };
       }
     }
   },

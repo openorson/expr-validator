@@ -1,5 +1,4 @@
-import { typeOf, typer } from "../common";
-import { ValidationError } from "../error";
+import { typer } from "../common";
 import { ValidatorExpression } from "../types/expression";
 import { createValidator } from "../validator/validator";
 import { NumberValidatorPrecisionArg, NumberValidatorRangeArg } from "./number";
@@ -12,8 +11,8 @@ export interface NumberRangeValidatorOptions {}
 
 export const numberRangeValidator = createValidator<NumberRangeValidatorExpression, NumberRangeValidatorOptions>({
   validate({ value, parse }) {
-    if (!typer<[number, number]>(value, parse, (v) => Array.isArray(v) && v.every((i) => typeof i === "number"), true)) {
-      return ValidationError.message({ comment: parse.comment, type: "类型", expect: "[number, number]", actual: typeOf(value) });
+    if (!typer<[number, number]>(value, parse, (v) => Array.isArray(v) && v.length === 2 && v.every((i) => typeof i === "number"), true)) {
+      return { type: "invalid", comment: parse.comment };
     }
   },
 });
