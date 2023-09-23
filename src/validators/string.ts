@@ -1,5 +1,5 @@
 import { typeOf, typer } from "../common";
-import { validationErrorMessage } from "../error";
+import { ValidationError } from "../error";
 import { pattern } from "../pattern";
 import { ValidatorExpression } from "../types/expression";
 import { createValidator } from "../validator/validator";
@@ -13,55 +13,41 @@ export interface StringValidatorOptions {}
 export const stringValidator = createValidator<StringValidatorExpression, StringValidatorOptions>({
   validate({ value, parse }) {
     if (!typer<string>(value, parse, (v) => typeof v === "string")) {
-      return validationErrorMessage({
-        comment: parse.comment,
-        type: "类型",
-        expect: "string",
-        actual: typeOf(value),
-        value,
-      });
+      return ValidationError.message({ comment: parse.comment, type: "类型", expect: "string", actual: typeOf(value), value });
     }
 
     const { $ } = parse.args ?? {};
 
     if (!$) {
-      if (value.length < 1 || value.length >= 256) {
-        return validationErrorMessage({
-          comment: parse.comment,
-          type: "长度",
-          expect: "[1,256)",
-          actual: value.length,
-          value,
-        });
+      if (value.length < 1 || value.length > 256) {
+        return ValidationError.message({ comment: parse.comment, type: "长度", expect: "1~256", actual: value.length, value });
       }
     } else {
       if ($.indexOf("/") === 0) {
         const reg = new RegExp($.slice(1, $.length - 1));
         if (!reg.test(value)) {
-          return "不符合正则";
+          return ValidationError.message({ comment: parse.comment, type: "格式", expect: reg, value });
         }
-      }
-
-      const range = $.split("-");
-      if (range.length === 1) {
-        if (Number.isNaN(+range[0])) {
-          if (!pattern[range[0] as keyof typeof pattern]?.test(value)) {
-            return "不符合正则";
-          }
-        } else {
-          if (value.length < +range[0]) {
-            return "不符合范围";
-          }
+      } else if ($.includes("~")) {
+        const [start, end] = $.split("~");
+        if (start && end && (value.length < +start || value.length > +end)) {
+          return ValidationError.message({ comment: parse.comment, type: "长度", expect: `${start}~${end}`, actual: value.length, value });
+        }
+        if (start && !end && value.length < +start) {
+          return ValidationError.message({ comment: parse.comment, type: "长度", expect: `>=${start}`, actual: value.length, value });
+        }
+        if (!start && end && value.length > +end) {
+          return ValidationError.message({ comment: parse.comment, type: "长度", expect: `<${end}`, actual: value.length, value });
         }
       } else {
-        if (value.length < +range[0] || value.length >= +range[1]) {
-          return "不符合范围";
+        if (!pattern[$ as keyof typeof pattern][1].test(value)) {
+          return ValidationError.message({ comment: parse.comment, type: "格式", expect: pattern[$ as keyof typeof pattern][0], value });
         }
       }
     }
   },
   parse(value: unknown) {
-    if (typeof value === "string") return value;
+    if (typeof value === "string") return value.trim();
     if (typeof value === "number") return String(value);
     return value;
   },
