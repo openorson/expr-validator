@@ -24,7 +24,9 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
                 throw new ValidationError(options.message);
               }
             } else {
-              throw new ValidationError(`数据${valid.comment ?? ""}无效；应符合 => "${expression}"；值 => "${value}"`);
+              const comment = valid.comment ? ` ${valid.comment}` : "";
+              const expr = JSON.stringify(expression);
+              throw new ValidationError(`Invalid data${comment}, should match the expression ${expr}, the actual value is "${value}".`);
             }
           } else {
             return false;

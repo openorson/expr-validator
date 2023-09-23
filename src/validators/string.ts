@@ -39,7 +39,7 @@ export const stringValidator = createValidator<StringValidatorExpression, String
           return { type: "invalid", comment: parse.comment };
         }
       } else {
-        if (!pattern[$1 as keyof typeof pattern][1].test(value)) {
+        if (!pattern[$1 as keyof typeof pattern].test(value)) {
           return { type: "invalid", comment: parse.comment };
         }
       }
