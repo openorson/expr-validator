@@ -1,11 +1,13 @@
 import { deepGet } from "../common";
+import { ValidatorArrayExpressionTupleMode, ValidatorArrayExpressionUnionMode } from "../types/expression";
+import { StringExpressionParse } from "../types/validator";
 import { createValidator } from "../validator/validator";
 import { BooleanValidatorExpression, booleanValidator } from "./boolean";
 import { DateValidatorExpression, dateValidator } from "./date";
 import { NumberValidatorExpression, numberValidator } from "./number";
 import { StringValidatorExpression, stringValidator } from "./string";
-import { TupleValidatorExpression } from "./tuple";
-import { UnionValidatorExpression } from "./union";
+import { TupleValidatorExpression, tupleValidator } from "./tuple";
+import { UnionValidatorExpression, unionValidator } from "./union";
 
 type ObjectValidatorFieldExpression =
   | StringValidatorExpression
@@ -31,13 +33,22 @@ export const objectValidator = createValidator<NestedObjectValidatorExpression, 
     for (const { path, expression, parse } of objectParse) {
       const value = deepGet(objectValue, path.split("."));
       if (Array.isArray(parse)) {
-        // const [_1, ...tupleExpression] = expression;
-        const [mode, ...arrayParse] = parse;
+        const [mode] = parse;
         if (mode === "tuple") {
-          // TODO
+          const valid = tupleValidator.$options.validate({
+            value,
+            parse: parse as [ValidatorArrayExpressionTupleMode, ...StringExpressionParse[]],
+            expression: expression as TupleValidatorExpression,
+          });
+          if (valid) return valid;
         }
         if (mode === "union") {
-          // TODO
+          const valid = unionValidator.$options.validate({
+            value,
+            parse: parse as [ValidatorArrayExpressionUnionMode, ...StringExpressionParse[]],
+            expression: expression as UnionValidatorExpression,
+          });
+          if (valid) return valid;
         }
       } else {
         if (parse.type === "string") {
@@ -58,5 +69,8 @@ export const objectValidator = createValidator<NestedObjectValidatorExpression, 
         }
       }
     }
+  },
+  parse({ value }) {
+    return value;
   },
 });

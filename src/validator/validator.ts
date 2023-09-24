@@ -25,8 +25,7 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
               }
             } else {
               const comment = valid.comment ? ` ${valid.comment}` : "";
-              const expr = JSON.stringify(expression);
-              throw new ValidationError(`Invalid data${comment}, should match the expression ${expr}, the actual value is "${value}".`);
+              throw new ValidationError(`Invalid data${comment}, should match the expression ${JSON.stringify(expression)}.`);
             }
           } else {
             return false;
