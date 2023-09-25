@@ -7,7 +7,6 @@ export default defineConfig([
     format: ["esm"],
     clean: true,
     dts: true,
-    sourcemap: true,
   },
   {
     entry: ["src"],
@@ -15,7 +14,6 @@ export default defineConfig([
     format: ["cjs"],
     clean: true,
     dts: true,
-    sourcemap: true,
   },
   {
     entry: ["src/index.ts"],
