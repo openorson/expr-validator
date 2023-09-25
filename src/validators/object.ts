@@ -1,4 +1,4 @@
-import { deepGet } from "../common";
+import { deepGet, deepSet } from "../common";
 import { ValidatorArrayExpressionTupleMode, ValidatorArrayExpressionUnionMode } from "../types/expression";
 import { StringExpressionParse } from "../types/validator";
 import { createValidator } from "../validator/validator";
@@ -70,7 +70,81 @@ export const objectValidator = createValidator<NestedObjectValidatorExpression, 
       }
     }
   },
-  parse({ value }) {
-    return value;
+  parseAndValidate({ value: objectValue, parse: objectParse }) {
+    const parseValue = Object.assign({}, objectValue);
+
+    for (const { path, expression, parse } of objectParse) {
+      const value = deepGet(objectValue, path);
+      if (Array.isArray(parse)) {
+        const [mode] = parse;
+        if (mode === "tuple") {
+          const valid = tupleValidator.$options.validate({
+            value,
+            parse: parse as [ValidatorArrayExpressionTupleMode, ...StringExpressionParse[]],
+            expression: expression as TupleValidatorExpression,
+          });
+          if (valid) return valid;
+        }
+        if (mode === "union") {
+          const valid = unionValidator.$options.validate({
+            value,
+            parse: parse as [ValidatorArrayExpressionUnionMode, ...StringExpressionParse[]],
+            expression: expression as UnionValidatorExpression,
+          });
+          if (valid) return valid;
+        }
+      } else {
+        if (parse.type === "string") {
+          let parsedValue: unknown = value;
+          if (stringValidator.$options.parse) {
+            parsedValue = stringValidator.$options.parse({ value, parse, expression: expression as StringValidatorExpression });
+          }
+          const valid = stringValidator.$options.validate({ value: parsedValue, parse, expression: expression as StringValidatorExpression });
+          if (valid) {
+            return valid;
+          } else {
+            deepSet(parseValue, path, parsedValue);
+          }
+        }
+        if (parse.type === "number") {
+          let parsedValue: unknown = value;
+          if (numberValidator.$options.parse) {
+            parsedValue = numberValidator.$options.parse({ value, parse, expression: expression as NumberValidatorExpression });
+          }
+          const valid = numberValidator.$options.validate({ value: parsedValue, parse, expression: expression as NumberValidatorExpression });
+          if (valid) {
+            return valid;
+          } else {
+            deepSet(parseValue, path, parsedValue);
+          }
+        }
+        if (parse.type === "boolean") {
+          let parsedValue: unknown = value;
+          if (booleanValidator.$options.parse) {
+            parsedValue = booleanValidator.$options.parse({ value, parse, expression: expression as BooleanValidatorExpression });
+          }
+          const valid = booleanValidator.$options.validate({ value: parsedValue, parse, expression: expression as BooleanValidatorExpression });
+          if (valid) {
+            return valid;
+          } else {
+            deepSet(parseValue, path, parsedValue);
+          }
+        }
+        if (parse.type === "date") {
+          let parsedValue: unknown = value;
+          if (dateValidator.$options.parse) {
+            parsedValue = dateValidator.$options.parse({ value, parse, expression: expression as DateValidatorExpression });
+          }
+          const valid = dateValidator.$options.validate({ value: parsedValue, parse, expression: expression as DateValidatorExpression });
+          if (valid) {
+            return valid;
+          } else {
+            deepSet(parseValue, path, parsedValue);
+          }
+        }
+      }
+    }
+
+    return { type: "parse", value: parseValue };
   },
 });
