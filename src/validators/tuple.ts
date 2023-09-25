@@ -74,5 +74,7 @@ export const tupleValidator = createValidator<TupleValidatorExpression, TupleVal
 
       index++;
     }
+
+    return parseValue;
   },
 });

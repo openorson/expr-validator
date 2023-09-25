@@ -14,6 +14,7 @@ export const booleanValidator = createValidator<BooleanValidatorExpression, Bool
   },
   parse({ value }) {
     if (typeof value === "boolean") return value;
+    if (value === null || value === void 0) return value;
     return !!value;
   },
 });
