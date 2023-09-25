@@ -14,7 +14,7 @@ export interface StringExpressionParse {
 }
 
 export type ExpressionParse<Expression> = Expression extends Record<string, unknown>
-  ? Generator<{ path: string; expression: unknown; parse: StringExpressionParse | [ValidatorArrayExpressionMode, ...StringExpressionParse[]] }>
+  ? Generator<{ path: string[]; expression: unknown; parse: StringExpressionParse | [ValidatorArrayExpressionMode, ...StringExpressionParse[]] }>
   : Expression extends string
   ? StringExpressionParse
   : Expression extends readonly unknown[]
@@ -54,8 +54,7 @@ export interface Validator<Expr, Options extends {}> {
   <const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
     value: unknown,
     expression: Expression,
-    options?: Options & ValidateOptions,
-    parse?: ExpressionParse<Expression>
+    options?: Options & ValidateOptions
   ): value is Type;
   parse<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
     value: unknown,

@@ -31,7 +31,7 @@ export interface ObjectValidatorOptions {}
 export const objectValidator = createValidator<NestedObjectValidatorExpression, ObjectValidatorOptions>({
   validate({ value: objectValue, parse: objectParse }) {
     for (const { path, expression, parse } of objectParse) {
-      const value = deepGet(objectValue, path.split("."));
+      const value = deepGet(objectValue, path);
       if (Array.isArray(parse)) {
         const [mode] = parse;
         if (mode === "tuple") {

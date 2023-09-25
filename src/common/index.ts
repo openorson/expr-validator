@@ -64,15 +64,15 @@ export function parseObjectExpression(expression: Record<string, unknown>) {
 
 export function* parseObjectExpressionGenerator(
   expression: Record<string, unknown>,
-  key: string = ""
-): Generator<{ path: string; parse: StringExpressionParse | readonly [string, ...StringExpressionParse[]] }> {
+  key: string[] = []
+): Generator<{ path: string[]; parse: StringExpressionParse | readonly [string, ...StringExpressionParse[]] }> {
   let clone = Object.assign({}, expression);
   const keys = Object.keys(clone);
 
   let index = 0;
   while (index < keys.length) {
     const type = Object.prototype.toString.call(expression[keys[index]]);
-    const path = key ? `${key}.${keys[index]}` : keys[index];
+    const path = [...key, keys[index]];
 
     if (type === "[object String]") {
       yield { path, parse: parseStringExpression(expression[keys[index]] as string) };
