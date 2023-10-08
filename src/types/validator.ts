@@ -49,15 +49,19 @@ export interface ValidatorOptions<Expression> {
 export interface ValidateOptions {
   throw?: boolean;
   message?: string | ((context: { value: unknown }) => string);
-  transform?: boolean;
 }
 
-export interface Validator<Expr, Options extends {}> {
+export interface Validator<ValidatorExpression, Options extends {}> {
   readonly [Symbol.toStringTag]: string;
-  $options: ValidatorOptions<Expr>;
-  <const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
+  $options: ValidatorOptions<ValidatorExpression>;
+  <const Expression extends ValidatorExpression, Type = ValidatorExpressionAsType<Expression>>(
     value: unknown,
     expression: Expression,
     options?: Options & ValidateOptions
   ): value is Type;
+  transform<const Expression extends ValidatorExpression, Type = ValidatorExpressionAsType<Expression>>(
+    value: unknown,
+    expression: Expression,
+    options?: Options
+  ): [valid: true, value: Type] | [valid: false, value: unknown];
 }
