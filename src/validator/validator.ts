@@ -16,32 +16,32 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
       parse: parseExpression(expression, true) as ExpressionParse<Expression>,
     });
 
-    if (valid) {
-      if (valid.type === "invalid") {
-        if (options) {
-          if (options.throw) {
-            if (options.message) {
-              if (typeof options.message === "function") {
-                throw new ValidationError(options.message({ value }));
-              } else {
-                throw new ValidationError(options.message);
-              }
+    if (valid.type === "valid") {
+      return true;
+    }
+
+    if (valid.type === "invalid") {
+      if (options) {
+        if (options.throw) {
+          if (options.message) {
+            if (typeof options.message === "function") {
+              throw new ValidationError(options.message({ value }));
             } else {
-              const comment = valid.comment ? ` ${valid.comment}` : "";
-              throw new ValidationError(`Invalid data${comment}, should match the expression ${JSON.stringify(expression)}.`);
+              throw new ValidationError(options.message);
             }
           } else {
-            return false;
+            const comment = valid.comment ? ` ${valid.comment}` : "";
+            throw new ValidationError(`Invalid data${comment}, should match the expression ${JSON.stringify(expression)}.`);
           }
         } else {
           return false;
         }
       } else {
-        return true;
+        return false;
       }
-    } else {
-      return true;
     }
+
+    throw new Error("Validator error.");
   }
 
   validator[Symbol.toStringTag] = "ExprValidator";
