@@ -1,7 +1,7 @@
 import { parseExpression } from "../common";
 import { ValidationError } from "../error";
 import { ValidatorExpressionAsType } from "../types/expression";
-import { Validator, ValidatorOptions, ValidateOptions, ParseOptions, ExpressionParse } from "../types/validator";
+import { Validator, ValidatorOptions, ValidateOptions, ExpressionParse } from "../types/validator";
 
 export function createValidator<Expr, Options extends {} = {}>(validatorOptions: ValidatorOptions<Expr>): Validator<Expr, Options> {
   function validator<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
@@ -9,8 +9,12 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
     expression: Expression,
     options?: Options & ValidateOptions
   ): value is Type {
-    const parse: ExpressionParse<Expression> = (options as any)?.__parse__ ?? parseExpression(expression, true);
-    const valid = validatorOptions.validate({ expression, value, parse });
+    const valid = validatorOptions.validate({
+      expression,
+      value,
+      transform: options?.transform ?? false,
+      parse: parseExpression(expression, true) as ExpressionParse<Expression>,
+    });
 
     if (valid) {
       if (valid.type === "invalid") {
@@ -40,19 +44,8 @@ export function createValidator<Expr, Options extends {} = {}>(validatorOptions:
     }
   }
 
-  function parse<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
-    value: unknown,
-    expression: Expression,
-    options?: Options & ValidateOptions & ParseOptions
-  ): [valid: true, value: Type] | [valid: false, value: unknown] {
-    const parse = parseExpression(expression, true) as ExpressionParse<Expression>;
-    const parseValue = validatorOptions.parse?.({ expression, value, parse }) ?? value;
-    return [validator(parseValue, expression, { ...options, __parse__: parse } as unknown as typeof options), parseValue as Type];
-  }
-
   validator[Symbol.toStringTag] = "ExprValidator";
   validator["$options"] = validatorOptions;
-  validator["parse"] = parse;
 
   return validator;
 }

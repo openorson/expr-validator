@@ -7,14 +7,16 @@ export type BooleanValidatorExpression = ValidatorExpression<"boolean", []>;
 export interface BooleanValidatorOptions {}
 
 export const booleanValidator = createValidator<BooleanValidatorExpression, BooleanValidatorOptions>({
-  validate({ value, parse }) {
+  validate({ value: val, parse, transform }) {
+    let value = val;
+    if (transform) {
+      if (!(value === null || value === void 0)) value = !!value;
+    }
+
     if (!typeCheck<boolean>(value, parse, (v) => typeof v === "boolean")) {
       return { type: "invalid", comment: parse.comment };
     }
-  },
-  parse({ value }) {
-    if (typeof value === "boolean") return value;
-    if (value === null || value === void 0) return value;
-    return !!value;
+
+    return { type: "valid", value };
   },
 });

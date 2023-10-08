@@ -11,14 +11,22 @@ export type NumberValidatorExpression = NumberValidatorExpression1 | NumberValid
 export interface NumberValidatorOptions {}
 
 export const numberValidator = createValidator<NumberValidatorExpression, NumberValidatorOptions>({
-  validate({ value, parse }) {
+  validate({ value: val, parse, transform }) {
+    let value = val;
+    if (transform) {
+      if (typeof value === "string") {
+        const number = Number(value);
+        if (!Number.isNaN(number)) value = number;
+      }
+    }
+
     if (!typeCheck<number>(value, parse, (v) => typeof v === "number")) {
       return { type: "invalid", comment: parse.comment };
     }
 
     const { $1, $2 } = parse.args ?? {};
 
-    if (!$1 && !$2) return;
+    if (!$1 && !$2) return { type: "valid", value };
 
     if ($1?.includes(".") || $2?.includes(".")) {
       const [integerLength, decimalLength] = ($1?.includes(".") ? $1 : $2).split(".");
@@ -46,17 +54,7 @@ export const numberValidator = createValidator<NumberValidatorExpression, Number
         return { type: "invalid", comment: parse.comment };
       }
     }
-  },
-  parse({ value }) {
-    if (typeof value === "number") return value;
-    if (typeof value === "string") {
-      const number = Number(value);
-      if (Number.isNaN(number)) {
-        return value;
-      } else {
-        return number;
-      }
-    }
-    return value;
+
+    return { type: "valid", value };
   },
 });

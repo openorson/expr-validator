@@ -10,7 +10,13 @@ export type StringValidatorExpression = ValidatorExpression<"string", [StringVal
 export interface StringValidatorOptions {}
 
 export const stringValidator = createValidator<StringValidatorExpression, StringValidatorOptions>({
-  validate({ value, parse }) {
+  validate({ value: val, parse, transform }) {
+    let value = val;
+    if (transform) {
+      if (typeof value === "string") value = value.trim();
+      if (typeof value === "number") value = String(value);
+    }
+
     if (!typeCheck<string>(value, parse, (v) => typeof v === "string")) {
       return { type: "invalid", comment: parse.comment };
     }
@@ -44,10 +50,7 @@ export const stringValidator = createValidator<StringValidatorExpression, String
         }
       }
     }
-  },
-  parse({ value }) {
-    if (typeof value === "string") return value.trim();
-    if (typeof value === "number") return String(value);
-    return value;
+
+    return { type: "valid", value };
   },
 });

@@ -29,6 +29,7 @@ export interface ValidateContext<Expression> {
   expression: Expression;
   value: unknown;
   parse: ExpressionParse<Expression>;
+  transform: boolean;
 }
 
 export interface ValidateInvalidResult {
@@ -36,23 +37,20 @@ export interface ValidateInvalidResult {
   comment?: string;
 }
 
-export interface ValidateParseResult {
-  type: "parse";
-  value: unknown;
+export interface ValidateValidResult {
+  type: "valid";
+  value: any;
 }
 
 export interface ValidatorOptions<Expression> {
-  validate: (context: ValidateContext<Expression>) => ValidateInvalidResult | void;
-  parse?: (context: ValidateContext<Expression>) => unknown;
-  parseAndValidate?: (context: ValidateContext<Expression>) => ValidateInvalidResult | ValidateParseResult;
+  validate: (context: ValidateContext<Expression>) => ValidateInvalidResult | ValidateValidResult;
 }
 
 export interface ValidateOptions {
   throw?: boolean;
   message?: string | ((context: { value: unknown }) => string);
+  transform?: boolean;
 }
-
-export interface ParseOptions {}
 
 export interface Validator<Expr, Options extends {}> {
   readonly [Symbol.toStringTag]: string;
@@ -62,9 +60,4 @@ export interface Validator<Expr, Options extends {}> {
     expression: Expression,
     options?: Options & ValidateOptions
   ): value is Type;
-  parse<const Expression extends Expr, Type = ValidatorExpressionAsType<Expression>>(
-    value: unknown,
-    expression: Expression,
-    options?: Options & ValidateOptions & ParseOptions
-  ): [valid: true, value: Type] | [valid: false, value: unknown];
 }
