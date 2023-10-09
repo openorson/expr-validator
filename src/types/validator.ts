@@ -43,8 +43,7 @@ export interface ValidateValidResult {
 }
 
 export interface ValidatorOptions<Expression> {
-  [x: string]: any;
-  validate: (this: this, context: ValidateContext<Expression>) => ValidateInvalidResult | ValidateValidResult;
+  validate: (context: ValidateContext<Expression>) => ValidateInvalidResult | ValidateValidResult;
 }
 
 export interface ValidateOptions {

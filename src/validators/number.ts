@@ -1,5 +1,5 @@
-import { typeCheck } from "../common";
 import { ValidatorExpression } from "../types/expression";
+import { StringExpressionParse, ValidateInvalidResult, ValidateValidResult } from "../types/validator";
 import { createValidator } from "../validator/validator";
 
 export type NumberValidatorPrecisionArg = ["", `${number}.` | `.${number}` | `${number}.${number}`];
@@ -22,76 +22,88 @@ export const numberValidator = createValidator<NumberValidatorExpression, Number
 
     if (parse.each) {
       if (!Array.isArray(value)) return { type: "invalid" };
-      if (transform) {
-        value = value.map((item) => !!item);
-        return { type: "valid", value };
+
+      for (let index = 0; index < value.length; index++) {
+        let item = value[index];
+
+        if (transform) {
+          if (typeof item === "string") {
+            const number = Number(item);
+            if (Number.isNaN(number)) {
+              return { type: "invalid" };
+            } else {
+              item = number;
+            }
+          }
+        }
+
+        if (Number.isNaN(item)) return { type: "invalid" };
+
+        if (typeof item === "number") {
+          const result = numberArgsValidate(parse, item);
+          if (result.type === "invalid") return result;
+          value[index] = item;
+        } else {
+          return { type: "invalid" };
+        }
       }
-      if ((value as any[]).some((item) => typeof item !== "boolean")) {
-        return { type: "invalid" };
-      } else {
-        return { type: "valid", value };
-      }
+
+      return { type: "valid", value };
     } else {
       if (transform) {
         if (typeof value === "string") {
           const number = Number(value);
-          if (!Number.isNaN(number)) {
+          if (Number.isNaN(number)) {
+            return { type: "invalid" };
+          } else {
             value = number;
             return { type: "valid", value };
           }
         }
       }
+
+      if (Number.isNaN(value)) return { type: "invalid" };
+
       if (typeof value === "number") {
-        return { type: "valid", value };
+        return numberArgsValidate(parse, value);
       } else {
         return { type: "invalid" };
       }
     }
   },
-  validate1({ value: val, parse, transform }) {
-    let value = val;
-    if (transform) {
-      if (typeof value === "string") {
-        const number = Number(value);
-        if (!Number.isNaN(number)) value = number;
-      }
-    }
+});
 
-    if (!typeCheck<number>(value, parse, (v) => typeof v === "number")) {
+function numberArgsValidate(parse: StringExpressionParse, value: number): ValidateInvalidResult | ValidateValidResult {
+  const { $1, $2 } = parse.args ?? {};
+
+  if (!$1 && !$2) return { type: "valid", value };
+
+  if ($1?.includes(".") || $2?.includes(".")) {
+    const [integerLength, decimalLength] = ($1?.includes(".") ? $1 : $2).split(".");
+    const [integer, decimal = ""] = String(value).split(".");
+    if (integerLength && decimalLength && (integer.length > +integerLength || decimal.length > +decimalLength)) {
       return { type: "invalid", comment: parse.comment };
     }
-
-    const { $1, $2 } = parse.args ?? {};
-
-    if (!$1 && !$2) return { type: "valid", value };
-
-    if ($1?.includes(".") || $2?.includes(".")) {
-      const [integerLength, decimalLength] = ($1?.includes(".") ? $1 : $2).split(".");
-      const [integer, decimal = ""] = String(value).split(".");
-      if (integerLength && decimalLength && (integer.length > +integerLength || decimal.length > +decimalLength)) {
-        return { type: "invalid", comment: parse.comment };
-      }
-      if (integerLength && !decimalLength && integer.length > +integerLength) {
-        return { type: "invalid", comment: parse.comment };
-      }
-      if (!integerLength && decimalLength && decimal.length > +decimalLength) {
-        return { type: "invalid", comment: parse.comment };
-      }
+    if (integerLength && !decimalLength && integer.length > +integerLength) {
+      return { type: "invalid", comment: parse.comment };
     }
-
-    if ($1?.includes("~") || $2?.includes("~")) {
-      const [min, max] = ($1?.includes("~") ? $1 : $2).split("~");
-      if (min && max && (value < +min || value > +max)) {
-        return { type: "invalid", comment: parse.comment };
-      }
-      if (min && !max && value < +min) {
-        return { type: "invalid", comment: parse.comment };
-      }
-      if (!min && max && value > +max) {
-        return { type: "invalid", comment: parse.comment };
-      }
+    if (!integerLength && decimalLength && decimal.length > +decimalLength) {
+      return { type: "invalid", comment: parse.comment };
     }
+  }
 
-    return { type: "valid", value };
-  },
-});
+  if ($1?.includes("~") || $2?.includes("~")) {
+    const [min, max] = ($1?.includes("~") ? $1 : $2).split("~");
+    if (min && max && (value < +min || value > +max)) {
+      return { type: "invalid", comment: parse.comment };
+    }
+    if (min && !max && value < +min) {
+      return { type: "invalid", comment: parse.comment };
+    }
+    if (!min && max && value > +max) {
+      return { type: "invalid", comment: parse.comment };
+    }
+  }
+
+  return { type: "valid", value };
+}
