@@ -1,4 +1,4 @@
-import { StringExpressionParse } from "../types/validator";
+import { StringExpressionParse, ValidateContext, ValidateInvalidResult, ValidateValidResult } from "../types/validator";
 
 export function typeOf(value: unknown) {
   return Object.prototype.toString.call(value).toLowerCase().slice(8, -1);
@@ -116,5 +116,58 @@ export function typeCheck<Type>(value: unknown, parse: StringExpressionParse, is
   } else {
     if (Array.isArray(value)) return false;
     return isType(value);
+  }
+}
+
+export function validate({
+  context,
+  transform,
+  typeValidate,
+  argsValidate,
+}: {
+  context: ValidateContext<string>;
+  transform: (value: unknown) => any;
+  typeValidate: (value: unknown) => boolean;
+  argsValidate?: (value: any) => ValidateInvalidResult | ValidateValidResult;
+}): ValidateInvalidResult | ValidateValidResult {
+  let value = context.value;
+
+  if (context.parse.optional) {
+    if (value === null || value === void 0) return { type: "valid", value };
+  } else {
+    if (value === null || value === void 0) return { type: "invalid" };
+  }
+
+  if (context.parse.each) {
+    if (!Array.isArray(value)) return { type: "invalid" };
+
+    for (let index = 0; index < value.length; index++) {
+      let item = value[index];
+      if (context.transform) item = transform(item);
+
+      if (typeValidate(item)) {
+        if (argsValidate) {
+          const result = argsValidate(item);
+          if (result.type === "invalid") return result;
+        }
+        value[index] = item;
+      } else {
+        return { type: "invalid" };
+      }
+    }
+
+    return { type: "valid", value };
+  } else {
+    if (context.transform) value = transform(value);
+
+    if (typeValidate(value)) {
+      if (argsValidate) {
+        return argsValidate(value);
+      } else {
+        return { type: "valid", value };
+      }
+    } else {
+      return { type: "invalid" };
+    }
   }
 }
