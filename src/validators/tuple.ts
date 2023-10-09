@@ -1,4 +1,5 @@
 import { ValidatorArrayExpressionTupleMode } from "../types/expression";
+import { ValidateInvalidResult, ValidateValidResult } from "../types/validator";
 import { createValidator } from "../validator/validator";
 import { BooleanValidatorExpression, booleanValidator } from "./boolean";
 import { DateValidatorExpression, dateValidator } from "./date";
@@ -13,68 +14,67 @@ export type TupleValidatorExpression = readonly [
 export interface TupleValidatorOptions {}
 
 export const tupleValidator = createValidator<TupleValidatorExpression, TupleValidatorOptions>({
-  validate({ expression, value, parse }) {
-    const [_1, ...tupleExpression] = expression;
-    const [_2, ...tupleParse] = parse;
+  validate(context) {
+    const [_1, ...tupleExpression] = context.expression;
+    const [_2, ...tupleParse] = context.parse;
 
-    if (!Array.isArray(value) || value.length !== tupleExpression.length) {
+    if (!Array.isArray(context.value) || context.value.length !== tupleExpression.length) {
       return { type: "invalid" };
     }
 
+    const value = [...context.value];
+
     let index = 0;
     while (index < tupleExpression.length) {
       const expression = tupleExpression[index];
       const parse = tupleParse[index];
+
+      let result: ValidateInvalidResult | ValidateValidResult;
 
       if (parse.type === "string") {
-        const valid = stringValidator.$options.validate({ value: value[index], parse, expression: expression as StringValidatorExpression });
-        if (valid) return valid;
+        result = stringValidator.$options.validate({
+          value: context.value[index],
+          parse,
+          transform: context.transform,
+          expression: expression as StringValidatorExpression,
+        });
       }
+
       if (parse.type === "number") {
-        const valid = numberValidator.$options.validate({ value: value[index], parse, expression: expression as NumberValidatorExpression });
-        if (valid) return valid;
+        result = numberValidator.$options.validate({
+          value: context.value[index],
+          parse,
+          transform: context.transform,
+          expression: expression as NumberValidatorExpression,
+        });
       }
+
       if (parse.type === "boolean") {
-        const valid = booleanValidator.$options.validate({ value: value[index], parse, expression: expression as BooleanValidatorExpression });
-        if (valid) return valid;
+        result = booleanValidator.$options.validate({
+          value: context.value[index],
+          parse,
+          transform: context.transform,
+          expression: expression as BooleanValidatorExpression,
+        });
       }
+
       if (parse.type === "date") {
-        const valid = dateValidator.$options.validate({ value: value[index], parse, expression: expression as DateValidatorExpression });
-        if (valid) return valid;
+        result = dateValidator.$options.validate({
+          value: context.value[index],
+          parse,
+          transform: context.transform,
+          expression: expression as DateValidatorExpression,
+        });
       }
 
-      index++;
-    }
-  },
-  parse({ expression, value, parse }) {
-    const [_1, ...tupleExpression] = expression;
-    const [_2, ...tupleParse] = parse;
-
-    if (!Array.isArray(value) || value.length !== tupleExpression.length) return value;
-
-    const parseValue = [...value];
-
-    let index = 0;
-    while (index < tupleExpression.length) {
-      const expression = tupleExpression[index];
-      const parse = tupleParse[index];
-
-      if (parse.type === "string" && stringValidator.$options.parse) {
-        parseValue[index] = stringValidator.$options.parse({ value: value[index], parse, expression: expression as StringValidatorExpression });
-      }
-      if (parse.type === "number" && numberValidator.$options.parse) {
-        parseValue[index] = numberValidator.$options.parse({ value: value[index], parse, expression: expression as NumberValidatorExpression });
-      }
-      if (parse.type === "boolean" && booleanValidator.$options.parse) {
-        parseValue[index] = booleanValidator.$options.parse({ value: value[index], parse, expression: expression as BooleanValidatorExpression });
-      }
-      if (parse.type === "date" && dateValidator.$options.parse) {
-        parseValue[index] = dateValidator.$options.parse({ value: value[index], parse, expression: expression as DateValidatorExpression });
+      if (result!) {
+        if (result.type === "invalid") return result;
+        value[index] = result.value;
       }
 
       index++;
     }
 
-    return parseValue;
+    return { type: "valid", value };
   },
 });
