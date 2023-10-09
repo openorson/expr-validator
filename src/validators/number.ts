@@ -13,6 +13,43 @@ export interface NumberValidatorOptions {}
 export const numberValidator = createValidator<NumberValidatorExpression, NumberValidatorOptions>({
   validate({ value: val, parse, transform }) {
     let value = val;
+
+    if (parse.optional) {
+      if (value === null || value === void 0) return { type: "valid", value };
+    } else {
+      if (value === null || value === void 0) return { type: "invalid" };
+    }
+
+    if (parse.each) {
+      if (!Array.isArray(value)) return { type: "invalid" };
+      if (transform) {
+        value = value.map((item) => !!item);
+        return { type: "valid", value };
+      }
+      if ((value as any[]).some((item) => typeof item !== "boolean")) {
+        return { type: "invalid" };
+      } else {
+        return { type: "valid", value };
+      }
+    } else {
+      if (transform) {
+        if (typeof value === "string") {
+          const number = Number(value);
+          if (!Number.isNaN(number)) {
+            value = number;
+            return { type: "valid", value };
+          }
+        }
+      }
+      if (typeof value === "number") {
+        return { type: "valid", value };
+      } else {
+        return { type: "invalid" };
+      }
+    }
+  },
+  validate1({ value: val, parse, transform }) {
+    let value = val;
     if (transform) {
       if (typeof value === "string") {
         const number = Number(value);
