@@ -12,6 +12,7 @@
   "main": "./dist/cjs/index.cjs",
   "types": "./dist/cjs/index.d.cts",
   "files": [
+    "src",
     "dist"
   ],
   "scripts": {
