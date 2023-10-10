@@ -1,7 +1,7 @@
 import { validate } from "../common";
 import { pattern } from "../pattern";
 import { ValidatorExpression } from "../types/expression";
-import { createValidator } from "../validator/validator";
+import { createValidator } from "../validator";
 
 export type StringValidatorPattern = keyof typeof pattern;
 export type StringValidatorArg = ["", `/${string}/` | `${number}~` | `~${number}` | `${number}~${number}` | StringValidatorPattern];

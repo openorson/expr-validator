@@ -1,6 +1,6 @@
 import { validate } from "../common";
 import { ValidatorExpression } from "../types/expression";
-import { createValidator } from "../validator/validator";
+import { createValidator } from "../validator";
 
 export type NumberValidatorPrecisionArg = ["", `${number}.` | `.${number}` | `${number}.${number}`];
 export type NumberValidatorRangeArg = ["", `${number}~` | `~${number}` | `${number}~${number}`];

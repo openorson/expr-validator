@@ -1,6 +1,6 @@
 import { validate } from "../common";
 import { ValidatorExpression } from "../types/expression";
-import { createValidator } from "../validator/validator";
+import { createValidator } from "../validator";
 
 export type DateValidatorExpression = ValidatorExpression<"date", []>;
 

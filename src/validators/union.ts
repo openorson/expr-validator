@@ -1,6 +1,6 @@
 import { ValidatorArrayExpressionUnionMode } from "../types/expression";
 import { ValidateInvalidResult, ValidateValidResult } from "../types/validator";
-import { createValidator } from "../validator/validator";
+import { createValidator } from "../validator";
 import { BooleanValidatorExpression, booleanValidator } from "./boolean";
 import { DateValidatorExpression, dateValidator } from "./date";
 import { NumberValidatorExpression, numberValidator } from "./number";
