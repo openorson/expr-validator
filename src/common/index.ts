@@ -103,22 +103,6 @@ export function parseExpression(expression: unknown, generator?: boolean) {
   throw new Error("Invalid expression");
 }
 
-export function typeCheck<Type>(value: unknown, parse: StringExpressionParse, isType: (value: unknown) => boolean): value is Type {
-  if (parse.optional) {
-    if (value === null || value === void 0) return true;
-  } else {
-    if (value === null || value === void 0) return false;
-  }
-
-  if (parse.each) {
-    if (!Array.isArray(value)) return false;
-    return value.some((item) => isType(item));
-  } else {
-    if (Array.isArray(value)) return false;
-    return isType(value);
-  }
-}
-
 export function validate({
   context,
   transform,

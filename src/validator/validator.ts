@@ -86,7 +86,7 @@ export function createValidator<ValidatorExpression, Options extends {} = {}>(
     throw new Error("An unexpected error occurred in the validator.");
   }
 
-  validator[Symbol.toStringTag] = "ExprValidator";
+  validator[Symbol.toStringTag] = "ExpressionValidator";
   validator["$options"] = validatorOptions;
   validator["transform"] = transform;
 
