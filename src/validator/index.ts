@@ -32,8 +32,7 @@ export function createValidator<ValidatorExpression, Options extends {} = {}>(
               throw new ValidationError(options.message);
             }
           } else {
-            const comment = valid.comment ? ` ${valid.comment}` : "";
-            throw new ValidationError(`Invalid data${comment}, should match the expression ${JSON.stringify(expression)}.`);
+            throw new ValidationError(`Invalid data, should match the expression ${JSON.stringify(expression)}.`);
           }
         } else {
           return false;
@@ -72,8 +71,7 @@ export function createValidator<ValidatorExpression, Options extends {} = {}>(
               throw new ValidationError(options.message);
             }
           } else {
-            const comment = valid.comment ? ` ${valid.comment}` : "";
-            throw new ValidationError(`Invalid data${comment}, should match the expression ${JSON.stringify(expression)}.`);
+            throw new ValidationError(`Invalid data, should match the expression ${JSON.stringify(expression)}.`);
           }
         } else {
           return [false, value];
