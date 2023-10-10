@@ -34,7 +34,6 @@ export interface ValidateContext<Expression> {
 
 export interface ValidateInvalidResult {
   type: "invalid";
-  comment?: string;
 }
 
 export interface ValidateValidResult {

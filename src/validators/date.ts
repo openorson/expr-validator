@@ -11,9 +11,11 @@ export const dateValidator = createValidator<DateValidatorExpression, DateValida
     return validate({
       context,
       transform: (value) => {
-        if (Object.prototype.toString.call(value) !== "[object Date]") {
+        if (Object.prototype.toString.call(value) === "[object Date]") {
+          return value;
+        } else {
           // @ts-ignore
-          value = Array.isArray(value) ? new Date(...value) : new Date(value);
+          return Array.isArray(value) ? new Date(...value) : new Date(value);
         }
       },
       typeValidate: (value) => Object.prototype.toString.call(value) === "[object Date]" && !Number.isNaN((value as Date).getTime()),

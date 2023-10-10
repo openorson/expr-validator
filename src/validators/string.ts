@@ -14,8 +14,8 @@ export const stringValidator = createValidator<StringValidatorExpression, String
     return validate({
       context,
       transform: (value) => {
-        if (typeof value === "string") value = value.trim();
-        if (typeof value === "number") value = String(value);
+        if (typeof value === "string") return value.trim();
+        if (typeof value === "number") return String(value);
         return value;
       },
       typeValidate: (value) => typeof value === "string",
@@ -23,30 +23,18 @@ export const stringValidator = createValidator<StringValidatorExpression, String
         const { $1 } = context.parse.args ?? {};
 
         if (!$1) {
-          if (value.length < 1 || value.length > 256) {
-            return { type: "invalid", comment: context.parse.comment };
-          }
+          if (value.length < 1 || value.length > 256) return { type: "invalid" };
         } else {
           if ($1.includes("/")) {
             const reg = new RegExp($1.slice(1, $1.length - 1));
-            if (!reg.test(value)) {
-              return { type: "invalid", comment: context.parse.comment };
-            }
+            if (!reg.test(value)) return { type: "invalid" };
           } else if ($1.includes("~")) {
             const [min, max] = $1.split("~");
-            if (min && max && (value.length < +min || value.length > +max)) {
-              return { type: "invalid", comment: context.parse.comment };
-            }
-            if (min && !max && value.length < +min) {
-              return { type: "invalid", comment: context.parse.comment };
-            }
-            if (!min && max && value.length > +max) {
-              return { type: "invalid", comment: context.parse.comment };
-            }
+            if (min && max && (value.length < +min || value.length > +max)) return { type: "invalid" };
+            if (min && !max && value.length < +min) return { type: "invalid" };
+            if (!min && max && value.length > +max) return { type: "invalid" };
           } else {
-            if (!pattern[$1 as keyof typeof pattern].test(value)) {
-              return { type: "invalid", comment: context.parse.comment };
-            }
+            if (!pattern[$1 as keyof typeof pattern].test(value)) return { type: "invalid" };
           }
         }
 

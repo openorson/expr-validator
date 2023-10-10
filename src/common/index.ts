@@ -145,11 +145,7 @@ export function validate({
     if (context.transform) value = transform(value);
 
     if (typeValidate(value)) {
-      if (argsValidate) {
-        return argsValidate(value);
-      } else {
-        return { type: "valid", value };
-      }
+      return argsValidate ? argsValidate(value) : { type: "valid", value };
     } else {
       return { type: "invalid" };
     }
