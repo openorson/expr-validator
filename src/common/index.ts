@@ -1,7 +1,7 @@
 import { StringExpressionParse, ValidateContext, ValidateInvalidResult, ValidateValidResult } from "../types/validator";
 
 export function deepSet(object: any, keys: string[], value: unknown) {
-  return keys.reduce((xs, x) => (xs[x] = x === keys.slice(-1)[0] ? value : xs[x] || {}), object);
+  return keys.reduce((xs, x) => (xs[x] = x === keys.slice(-1)[0] ? value : xs[x] ?? {}), object);
 }
 
 export function parseStringExpression(expression: string): StringExpressionParse {
@@ -61,11 +61,10 @@ export function* parseObjectExpressionGenerator(
 }
 
 export function parseExpression(expression: unknown, value?: any) {
-  const type = Object.prototype.toString.call(expression);
-  if (type === "[object String]") return parseStringExpression(expression as string);
-  if (type === "[object Object]") return parseObjectExpressionGenerator(value, expression as Record<string, unknown>);
-  if (type === "[object Array]") return parseArrayExpression(expression as string[]);
-  throw new Error("Invalid expression");
+  if (typeof expression === "string") return parseStringExpression(expression as string);
+  return Array.isArray(expression)
+    ? parseArrayExpression(expression as string[])
+    : parseObjectExpressionGenerator(value, expression as Record<string, unknown>);
 }
 
 export function validate({
