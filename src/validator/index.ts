@@ -15,7 +15,7 @@ export function createValidator<ValidatorExpression, Options extends {} = {}>(
       expression,
       value,
       transform: false,
-      parse: parseExpression(expression, true) as ExpressionParse<Expression>,
+      parse: parseExpression(expression, value) as ExpressionParse<Expression>,
     });
 
     if (valid.type === "valid") {
@@ -54,7 +54,7 @@ export function createValidator<ValidatorExpression, Options extends {} = {}>(
       expression,
       value,
       transform: true,
-      parse: parseExpression(expression, true) as ExpressionParse<Expression>,
+      parse: parseExpression(expression, value) as ExpressionParse<Expression>,
     });
 
     if (valid.type === "valid") {

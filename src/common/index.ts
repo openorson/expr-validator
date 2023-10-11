@@ -1,13 +1,5 @@
 import { StringExpressionParse, ValidateContext, ValidateInvalidResult, ValidateValidResult } from "../types/validator";
 
-export function typeOf(value: unknown) {
-  return Object.prototype.toString.call(value).toLowerCase().slice(8, -1);
-}
-
-export function deepGet(object: any, keys: string[]): unknown {
-  return keys.reduce((xs, x) => (xs && xs[x] !== null && xs[x] !== void 0 ? xs[x] : null), object);
-}
-
 export function deepSet(object: any, keys: string[], value: unknown) {
   return keys.reduce((xs, x) => (xs[x] = x === keys.slice(-1)[0] ? value : xs[x] || {}), object);
 }
@@ -38,52 +30,28 @@ export function parseArrayExpression(expression: string[]) {
   return [mode, ...expressions.map((expression) => parseStringExpression(expression))] as const;
 }
 
-export function parseObjectExpression(expression: Record<string, unknown>) {
-  let clone = Object.assign({}, expression);
-  const keys = Object.keys(clone);
-
-  let index = 0;
-  while (index < keys.length) {
-    const type = Object.prototype.toString.call(expression[keys[index]]);
-
-    if (type === "[object String]") {
-      clone[keys[index]] = parseStringExpression(expression[keys[index]] as string);
-    } else if (type === "[object Object]") {
-      clone[keys[index]] = parseObjectExpression(expression[keys[index]] as Record<string, unknown>);
-    } else if (type === "[object Array]") {
-      clone[keys[index]] = parseArrayExpression(expression[keys[index]] as string[]);
-    } else {
-      throw new Error("Invalid expression");
-    }
-
-    index++;
-  }
-
-  return clone;
-}
-
 export function* parseObjectExpressionGenerator(
+  object: any,
   expression: Record<string, unknown>,
   key: string[] = []
-): Generator<{ path: string[]; parse: StringExpressionParse | readonly [string, ...StringExpressionParse[]] }> {
+): Generator<{ value: any; path: string[]; parse: StringExpressionParse | readonly [string, ...StringExpressionParse[]] }> {
   let clone = Object.assign({}, expression);
   const keys = Object.keys(clone);
 
   let index = 0;
   while (index < keys.length) {
-    const type = Object.prototype.toString.call(expression[keys[index]]);
+    const expr = expression[keys[index]];
     const path = [...key, keys[index]];
+    const value = object[keys[index]];
 
-    if (type === "[object String]") {
-      yield { path, parse: parseStringExpression(expression[keys[index]] as string) };
-    } else if (type === "[object Object]") {
-      for (const iterator of parseObjectExpressionGenerator(expression[keys[index]] as Record<string, unknown>, path)) {
+    if (typeof expr === "string") {
+      yield { value, path, parse: parseStringExpression(expr as string) };
+    } else if (Array.isArray(expr)) {
+      yield { value, path, parse: parseArrayExpression(expr as string[]) };
+    } else {
+      for (const iterator of parseObjectExpressionGenerator(value, expr as Record<string, unknown>, path)) {
         yield iterator;
       }
-    } else if (type === "[object Array]") {
-      yield { path, parse: parseArrayExpression(expression[keys[index]] as string[]) };
-    } else {
-      throw new Error("Invalid expression");
     }
 
     index++;
@@ -92,13 +60,10 @@ export function* parseObjectExpressionGenerator(
   return clone;
 }
 
-export function parseExpression(expression: unknown, generator?: boolean) {
+export function parseExpression(expression: unknown, value?: any) {
   const type = Object.prototype.toString.call(expression);
   if (type === "[object String]") return parseStringExpression(expression as string);
-  if (type === "[object Object]")
-    return generator
-      ? parseObjectExpressionGenerator(expression as Record<string, unknown>)
-      : parseObjectExpression(expression as Record<string, any>);
+  if (type === "[object Object]") return parseObjectExpressionGenerator(value, expression as Record<string, unknown>);
   if (type === "[object Array]") return parseArrayExpression(expression as string[]);
   throw new Error("Invalid expression");
 }

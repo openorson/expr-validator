@@ -1,4 +1,4 @@
-import { deepGet, deepSet } from "../common";
+import { deepSet } from "../common";
 import { ValidatorArrayExpressionTupleMode, ValidatorArrayExpressionUnionMode } from "../types/expression";
 import { StringExpressionParse, ValidateInvalidResult, ValidateValidResult } from "../types/validator";
 import { createValidator } from "../validator";
@@ -30,20 +30,18 @@ export interface ObjectValidatorOptions {}
 
 export const objectValidator = createValidator<NestedObjectValidatorExpression, ObjectValidatorOptions>({
   validate(context) {
-    const value = {};
+    const object = {};
 
     if (typeof context.value !== "object") return { type: "invalid" };
 
-    for (const { path, expression, parse } of context.parse) {
+    for (const { value, path, expression, parse } of context.parse) {
       let result: ValidateInvalidResult | ValidateValidResult;
-
-      const item = deepGet(context.value, path);
 
       if (Array.isArray(parse)) {
         const [mode] = parse;
         if (mode === "tuple") {
           result = tupleValidator.$options.validate({
-            value: item,
+            value,
             parse: parse as [ValidatorArrayExpressionTupleMode, ...StringExpressionParse[]],
             transform: context.transform,
             expression: expression as TupleValidatorExpression,
@@ -51,7 +49,7 @@ export const objectValidator = createValidator<NestedObjectValidatorExpression, 
         }
         if (mode === "union") {
           result = unionValidator.$options.validate({
-            value: item,
+            value,
             parse: parse as [ValidatorArrayExpressionUnionMode, ...StringExpressionParse[]],
             transform: context.transform,
             expression: expression as UnionValidatorExpression,
@@ -60,7 +58,7 @@ export const objectValidator = createValidator<NestedObjectValidatorExpression, 
       } else {
         if (parse.type === "string") {
           result = stringValidator.$options.validate({
-            value: item,
+            value,
             parse,
             transform: context.transform,
             expression: expression as StringValidatorExpression,
@@ -68,7 +66,7 @@ export const objectValidator = createValidator<NestedObjectValidatorExpression, 
         }
         if (parse.type === "number") {
           result = numberValidator.$options.validate({
-            value: item,
+            value,
             parse,
             transform: context.transform,
             expression: expression as NumberValidatorExpression,
@@ -76,7 +74,7 @@ export const objectValidator = createValidator<NestedObjectValidatorExpression, 
         }
         if (parse.type === "boolean") {
           result = booleanValidator.$options.validate({
-            value: item,
+            value,
             parse,
             transform: context.transform,
             expression: expression as BooleanValidatorExpression,
@@ -84,7 +82,7 @@ export const objectValidator = createValidator<NestedObjectValidatorExpression, 
         }
         if (parse.type === "date") {
           result = dateValidator.$options.validate({
-            value: item,
+            value,
             parse,
             transform: context.transform,
             expression: expression as DateValidatorExpression,
@@ -94,10 +92,10 @@ export const objectValidator = createValidator<NestedObjectValidatorExpression, 
 
       if (result!) {
         if (result.type === "invalid") return result;
-        deepSet(value, path, result.value);
+        deepSet(object, path, result.value);
       }
     }
 
-    return { type: "valid", value };
+    return { type: "valid", value: object };
   },
 });
