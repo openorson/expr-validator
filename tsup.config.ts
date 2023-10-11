@@ -19,7 +19,7 @@ export default defineConfig([
     entry: ["src/index.ts"],
     outDir: "dist/iife",
     format: ["iife"],
-    globalName: "exprValidator",
+    globalName: "expressionValidator",
     clean: true,
     treeshake: true,
     minify: "terser",
