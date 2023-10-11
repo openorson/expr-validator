@@ -30,7 +30,9 @@ export interface ObjectValidatorOptions {}
 
 export const objectValidator = createValidator<NestedObjectValidatorExpression, ObjectValidatorOptions>({
   validate(context) {
-    const value = Object.assign({}, context.value);
+    const value = {};
+
+    if (typeof context.value !== "object") return { type: "invalid" };
 
     for (const { path, expression, parse } of context.parse) {
       let result: ValidateInvalidResult | ValidateValidResult;

@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { validator } from "../src/index";
 
-test("object", () => {
+test("object validate test", () => {
   expect(
     validator.object(
       {
@@ -24,4 +24,52 @@ test("object", () => {
       }
     )
   ).toBe(true);
+});
+
+test("object transform test", () => {
+  expect(
+    validator.object.transform(
+      {
+        a: {
+          b: {
+            c: {
+              d: true,
+            },
+          },
+          e: "validator",
+          f: {
+            g: "1",
+          },
+        },
+      },
+      {
+        a: {
+          b: {
+            c: {
+              d: "boolean!",
+            },
+          },
+          e: "string!",
+          f: {
+            g: "number!",
+          },
+        },
+      }
+    )
+  ).toStrictEqual([
+    true,
+    {
+      a: {
+        b: {
+          c: {
+            d: true,
+          },
+        },
+        e: "validator",
+        f: {
+          g: 1,
+        },
+      },
+    },
+  ]);
 });
